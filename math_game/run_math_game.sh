@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# A simple shell wrapper for the hacker_simulator.py script
-
+# A simple shell wrapper 
 # Check if Python is installed
 if ! command -v python3 &> /dev/null
 then
