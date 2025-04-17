@@ -14,13 +14,20 @@ DODGE_CHANCE = 0.1
 # Weapon types and their properties
 WEAPONS = {
     "Wooden Sword": {"damage": 5, "speed": 1.0, "price": 30},
+    "Bone Sword": {"damage": 7, "speed": 1.0, "price": 50},
     "Iron Sword": {"damage": 10, "speed": 1.0, "price": 80},
     "Steel Sword": {"damage": 15, "speed": 0.9, "price": 150},
     "Flame Sword": {"damage": 20, "speed": 1.1, "price": 300, "effect": "burn"},
     "Ice Sword": {"damage": 18, "speed": 0.8, "price": 300, "effect": "freeze"},
     "Magic Staff": {"damage": 12, "speed": 1.2, "price": 200, "effect": "magic"},
     "Battle Axe": {"damage": 25, "speed": 0.7, "price": 250},
+    "Longbow": {"damage": 20, "speed": 1.5, "price": 180},
+    "Shortbow": {"damage": 18, "speed": 1.3, "price": 150},
     "Dagger": {"damage": 8, "speed": 1.5, "price": 100},
+    "Spear": {"damage": 12, "speed": 1.2, "price": 120},
+    "Crossbow": {"damage": 15, "speed": 0.6, "price": 200},
+    "Katana": {"damage": 22, "speed": 1.0, "price": 350},
+    "Elder Wand": {"damage": 30, "speed": 1.0, "price": 500, "effect": "ultimate"},
 }
 
 # Towns and locations
@@ -52,19 +59,71 @@ LOCATIONS = {
         "shops": ["Dark Market", "Mystic Shop"],
         "monsters": ["Shadow Beast", "Dark Knight"],
         "description": "A mysterious town shrouded in eternal twilight"
-    }
+    },
+    "Frostvale": {
+        "type": "town",
+        "shops": ["Ice Forge", "Potion Shop"],
+        "monsters": ["Ice Troll", "Frost Giant"],
+        "description": "A snowy town known for its ice magic"
+    },
+    "Long Shui Zhen (Dragonwater Town)": {
+        "type": "city",
+        "shops": ["Dragon Market", "Dragon Temple"],
+        "monsters": ["Dragon Knight", "Water Elemental"],
+        "description": "A bustling city with a rich history of dragon taming"
+    },
+    "Jade Lotus Village": {
+    "type": "town",
+    "shops": ["Herbalist", "Tea House", "Charm Shop"],
+    "monsters": ["Lotus Spirit", "Pond Serpent"],
+    "description": "A tranquil village known for its serene gardens and sacred lotus ponds"
+},
+"Thundercliff Hold": {
+    "type": "dangerous",
+    "monsters": ["Storm Elemental", "Rock Wyvern"],
+    "description": "A high cliff fortress battered by storms and haunted by sky beasts"
+},
+"Ember Hollow": {
+    "type": "dungeon",
+    "monsters": ["Lava Hound", "Molten Wraith"],
+    "description": "A volcanic cavern where fire magic pulses through the earth"
+},
+"Moonveil Harbor": {
+    "type": "town",
+    "shops": ["Navigator's Guild", "Seafood Market", "Lunar Shrine"],
+    "monsters": ["Moonshade Specter", "Sea Serpent"],
+    "description": "A mystical harbor town bathed in moonlight and tied to ancient sea legends"
+},
+"Verdant Spire": {
+    "type": "city",
+    "shops": ["Elven Boutique", "Sky Garden", "Mystic Archives"],
+    "monsters": ["Treant", "Forest Guardian"],
+    "description": "A soaring city built into a sacred tree, home to ancient knowledge and nature spirits"
+},
+"Silent Ashes": {
+    "type": "dungeon",
+    "monsters": ["Ash Revenant", "Cursed Wanderer"],
+    "description": "The ruins of a once-great city buried in ash and echoing with whispers of the past"
+}
+
 }
 
 # Character classes
 CHARACTER_CLASSES = {
-    "Warrior": {"health_bonus": 50, "attack_bonus": 10, "defense_bonus": 15},
-    "Mage": {"health_bonus": -20, "attack_bonus": 25, "defense_bonus": 0},
+    "Warrior": {"health_bonus": 20, "attack_bonus": 10, "defense_bonus": 15},
+    "Mage": {"health_bonus": -10, "attack_bonus": 25, "defense_bonus": 0},
     "Rogue": {"health_bonus": 0, "attack_bonus": 15, "defense_bonus": 5},
     "Paladin": {"health_bonus": 30, "attack_bonus": 15, "defense_bonus": 20},
     "Archer": {"health_bonus": -10, "attack_bonus": 20, "defense_bonus": 5},
     "Berserker": {"health_bonus": 20, "attack_bonus": 30, "defense_bonus": -10},
     "Priest": {"health_bonus": 10, "attack_bonus": 5, "defense_bonus": 10},
-    "Assassin": {"health_bonus": -15, "attack_bonus": 35, "defense_bonus": -5}
+    "Assassin": {"health_bonus": -15, "attack_bonus": 35, "defense_bonus": -5},
+    "Druid": {"health_bonus": 15, "attack_bonus": 10, "defense_bonus": 15},
+    "Samurai": {"health_bonus": 0, "attack_bonus": 20, "defense_bonus": 10},
+    "Ninja": {"health_bonus": -5, "attack_bonus": 25, "defense_bonus": 5},
+    "Knight": {"health_bonus": 40, "attack_bonus": 10, "defense_bonus": 20},
+    "Hunter": {"health_bonus": 0, "attack_bonus": 15, "defense_bonus": 10},
+    "Tamer": {"health_bonus": 35, "attack_bonus": 50, "defense_bonus": -25},
 }
 
 # Item rarity
@@ -85,7 +144,14 @@ SKILLS = {
     "Archer": ["Quick Shot", "Rain of Arrows", "Eagle Eye"],
     "Berserker": ["Rage", "Whirlwind", "Blood Thirst"],
     "Priest": ["Holy Nova", "Divine Heal", "Smite"],
-    "Assassin": ["Shadow Strike", "Vanish", "Death Mark"]
+    "Assassin": ["Shadow Strike", "Vanish", "Death Mark"],
+    "Druid": ["Entangle", "Nature's Touch", "Beast Form"],
+    "Samurai": ["Iaijutsu Slash", "Bushido Focus", "Wind Cutter"],
+    "Ninja": ["Shuriken Toss", "Shadow Clone", "Silent Step"],
+    "Knight": ["Shield Bash", "Taunt", "Valor Strike"],
+    "Hunter": ["Trap Set", "Beast Call", "Piercing Arrow"],
+    "Tamer": ["Summon Beast", "Beast Fury", "Bonded Strike"]
+
 }
 
 # Enhanced crafting system
@@ -123,7 +189,18 @@ MATERIALS = {
     "Red Herb": {"areas": ["Forest", "Plains"], "tool_required": None},
     "Water Flask": {"areas": ["River", "Lake"], "tool_required": "Flask"},
     "Leather": {"areas": ["Plains"], "tool_required": "Hunting Knife"},
-    "Steel Ingot": {"areas": ["Blacksmith"], "tool_required": "Furnace"}
+    "Steel Ingot": {"areas": ["Blacksmith"], "tool_required": "Furnace"},
+    "Gold Ore": {"areas": ["Mountain", "Deep Cave"], "tool_required": "Pickaxe"},
+"Magic Crystal": {"areas": ["Crystal Cave", "Ancient Ruins"], "tool_required": "Magic Chisel"},
+"Fish": {"areas": ["River", "Lake", "Coast"], "tool_required": "Fishing Rod"},
+"Silk Thread": {"areas": ["Forest", "Spider Nest"], "tool_required": "Silk Spinner"},
+"Clay": {"areas": ["Riverbank", "Swamp"], "tool_required": "Shovel"},
+"Coal": {"areas": ["Mine", "Mountain"], "tool_required": "Pickaxe"},
+"Ancient Relic": {"areas": ["Ruins", "Temple"], "tool_required": "Archaeology Kit"},
+"Salt": {"areas": ["Cave", "Desert Spring"], "tool_required": "Pickaxe"},
+"Venom Sac": {"areas": ["Swamp", "Spider Nest"], "tool_required": "Hunting Knife"},
+"Feathers": {"areas": ["Plains", "Cliffside"], "tool_required": "None"}
+
 }
 
 # Sample quests
@@ -141,12 +218,97 @@ QUESTS = [
         "description": "Defeat any dragon",
         "target": {"monster": "Dragon", "count": 1},
         "reward": {"gold": 200, "exp": 300}
-    }
+    },
+    {
+    "id": 3,
+    "name": "Howling Threat",
+    "description": "Hunt down 5 wolves in the forest",
+    "target": {"monster": "Wolf", "count": 5},
+    "reward": {"gold": 40, "exp": 90}
+    },
+    { 
+    "id": 4,
+    "name": "Skeleton Cleanup",
+    "description": "Destroy 4 skeletons near the cemetery",
+    "target": {"monster": "Skeleton", "count": 4},
+    "reward": {"gold": 60, "exp": 110}
+    },
+    {
+    "id": 5,
+    "name": "Ghostly Presence",
+    "description": "Banish 3 ghosts from Stormhaven",
+    "target": {"monster": "Ghost", "count": 3},
+    "reward": {"gold": 70, "exp": 150}
+    },
+    {
+    "id": 6,
+    "name": "Troll Trouble",
+    "description": "Defeat 2 Cave Trolls",
+    "target": {"monster": "Cave Troll", "count": 2},
+    "reward": {"gold": 90, "exp": 180}
+    },
+    {
+    "id": 7,
+    "name": "Dark Knight Duel",
+    "description": "Take down 1 Dark Knight in Shadowmere",
+    "target": {"monster": "Dark Knight", "count": 1},
+    "reward": {"gold": 120, "exp": 250}
+    },
+    {
+    "id": 8,
+    "name": "Fire Dragon Challenge",
+    "description": "Defeat the Fire Dragon atop Dragon's Peak",
+    "target": {"monster": "Fire Dragon", "count": 1},
+    "reward": {"gold": 250, "exp": 400}
+    },
+    {
+    "id": 9,
+    "name": "Crystal Golem Rampage",
+    "description": "Stop 2 Crystal Golems in Crystal Cave",
+    "target": {"monster": "Crystal Golem", "count": 2},
+    "reward": {"gold": 100, "exp": 200}
+    },
+    {
+    "id": 10,
+    "name": "Ice Troll Hunt",
+    "description": "Eliminate 3 Ice Trolls in Frostvale",
+    "target": {"monster": "Ice Troll", "count": 3},
+    "reward": {"gold": 80, "exp": 170}
+    },
+    {
+    "id": 11,
+    "name": "Phoenix Feather",
+    "description": "Collect 1 Phoenix Feather from the Silent Ashes",
+    "target": {"monster": "Phoenix", "count": 1},
+    "reward": {"gold": 300, "exp": 500}
+    },
+    {
+     "id": 12,
+     "name": "Water Elemental",
+     "description": "Defeat 2 Water Elementals in Long Shui Zhen",
+     "target": {"monster": "Water Elemental", "count": 2},
+     "reward": {"gold": 110, "exp": 220}
+    }   
 ]
+
+# Available professions with their bonuses
+PROFESSIONS = {
+    "Miner": {"gather_bonus": ["Iron Ore", "Gold Ore"], "craft_bonus": ["weapons"]},
+    "Herbalist": {"gather_bonus": ["Red Herb"], "craft_bonus": ["potions"]},
+    "Blacksmith": {"gather_bonus": ["Iron Ore"], "craft_bonus": ["armor"]},
+    "Alchemist": {"gather_bonus": ["Red Herb"], "craft_bonus": ["potions"]},
+    "Hunter": {"gather_bonus": ["Leather"], "craft_bonus": ["bows"]},
+    "Woodcutter": {"gather_bonus": ["Wood"], "craft_bonus": ["staves"]},
+    "Fisher": {"gather_bonus": ["Fish"], "craft_bonus": ["fishing gear"]},
+    "Archaeologist": {"gather_bonus": ["Ancient Relic"], "craft_bonus": ["artifacts"]},
+    "Enchanter": {"gather_bonus": ["Magic Crystal"], "craft_bonus": ["enchanted items"]},
+}
 
 # Initialize user data with proper typing
 user_data: Dict = {
     "class": None,
+    "profession": None,
+    "has_chosen_profession": False,
     "level": 1,
     "inventory": [],
     "equipped": {"weapon": None, "armor": None},
@@ -165,54 +327,285 @@ user_data: Dict = {
     "completed_quests": [],
     "materials": {},
     "tools": ["Axe", "Pickaxe", "Flask", "Hunting Knife"],  # Starting tools
-    "current_area": "Town"
+    "current_area": "Greenwood Village"
 }
 
 # Shop items
 shop_items = [
+    # === Basic Equipment ===
     {"name": "Wooden Sword", "type": "weapon", "effect": 5, "price": 30},
     {"name": "Iron Sword", "type": "weapon", "effect": 10, "price": 80},
+    {"name": "Steel Sword", "type": "weapon", "effect": 15, "price": 150},
     {"name": "Bone Armor", "type": "armor", "effect": 5, "price": 40},
     {"name": "Iron Armor", "type": "armor", "effect": 10, "price": 100},
+    {"name": "Steel Armor", "type": "armor", "effect": 15, "price": 180},
+    {"name": "Bronze Dagger", "type": "weapon", "effect": 7, "price": 50},
+    {"name": "Chainmail", "type": "armor", "effect": 8, "price": 75},
+    
+    # === Consumables ===
     {"name": "Healing Potion", "type": "consumable", "effect": 30, "price": 20},
+    {"name": "Greater Healing Potion", "type": "consumable", "effect": 60, "price": 50},
+    {"name": "Antidote", "type": "consumable", "effect": "cure_poison", "price": 25},
+    {"name": "Mega Healing Potion", "type": "consumable", "effect": 60, "price": 50},
+    {"name": "Mana Potion", "type": "consumable", "effect": 40, "price": 35},
+    {"name": "Stamina Elixir", "type": "consumable", "effect": "restore_stamina", "price": 30},
+    {"name": "Revival Herb", "type": "consumable", "effect": "revive", "price": 100},
+    {"name": "Energy Drink", "type": "consumable", "effect": 25, "price": 15},
+    
+    # === Special Equipment ===
+    {"name": "Magic Staff", "type": "weapon", "effect": 12, "price": 200},
+    {"name": "Shadow Cloak", "type": "armor", "effect": 8, "price": 90},
+    {"name": "Flame Dagger", "type": "weapon", "effect": 12, "price": 130},
+    {"name": "Leather Armor", "type": "armor", "effect": 7, "price": 70},
+    {"name": "Bow of the Eagle", "type": "weapon", "effect": 14, "price": 160},
+    {"name": "Throwing Knife", "type": "weapon", "effect": 6, "price": 45},
+    {"name": "Obsidian Greatsword", "type": "weapon", "effect": 18, "price": 220},
+    {"name": "Dragonhide Vest", "type": "armor", "effect": 12, "price": 150},
+    {"name": "Silver Rapier", "type": "weapon", "effect": 16, "price": 190},
+    {"name": "Enchanted Robes", "type": "armor", "effect": 10, "price": 120},
+    {"name": "Crossbow", "type": "weapon", "effect": 13, "price": 140},
+    {"name": "Tower Shield", "type": "armor", "effect": 14, "price": 170},
+
+    # === Exotic Equipment === 
+    {"name": "Vorpal Blade", "type": "weapon", "effect": 25, "price": 500, "special": "Ignores armor"},
+    {"name": "Phoenix Plate", "type": "armor", "effect": 20, "price": 600, "special": "Self-repair over time"},
+    {"name": "Elder Wand", "type": "weapon", "effect": 30, "price": 800, "special": "Chance to cast spells for free"},
+    {"name": "Cloak of Invisibility", "type": "armor", "effect": 15, "price": 700, "special": "Temporary stealth on use"},
+    {"name": "Mjolnir", "type": "weapon", "effect": 35, "price": 1000, "special": "Lightning strikes on critical hits"},
+    {"name": "Aegis of the Gods", "type": "armor", "effect": 25, "price": 900, "special": "Blocks all critical hits"},
+    
+    # === More Exotic Items from Monster Drops ===
+    {"name": "Crimson Cutlass", "type": "weapon", "effect": 28, "price": 750, "special": "Bleeds enemies over time", "source": "Dreadlord Varkhull"},
+    {"name": "Dragon Armor", "type": "armor", "effect": 22, "price": 850, "special": "Resistant to fire/ice/lightning", "source": "Dragon Knight"},
+    {"name": "Undead Blade", "type": "weapon", "effect": 30, "price": 900, "special": "Life steal (10% of damage)", "source": "Undead Knight"},
+    {"name": "Jade Crown", "type": "armor", "effect": 25, "price": 1200, "special": "+20% max HP", "source": "Jade Emperor"},
+    {"name": "Shadow Blade", "type": "weapon", "effect": 32, "price": 950, "special": "Critical hits deal 3x damage", "source": "Shadow Samurai"},
+    {"name": "Phoenix Feather", "type": "consumable", "effect": "full_revive", "price": 800, "special": "Revives with full HP", "source": "Phoenix"},
+    {"name": "Cursed Katana", "type": "weapon", "effect": 40, "price": 1500, "special": "Deals self-damage (5% per hit)", "source": "Possessed Katana"},
+    {"name": "Samurai Armor", "type": "armor", "effect": 30, "price": 1300, "special": "Counterattacks when hit", "source": "The Shogun"},
+    {"name": "Kitsune Mask", "type": "armor", "effect": 18, "price": 700, "special": "Illusionary clones confuse enemies", "source": "Kitsune Warrior"},
+    {"name": "Storm Eye", "type": "consumable", "effect": "summon_storm", "price": 600, "special": "Calls lightning on enemies (3 uses)", "source": "Vision of the Thunder"},
+    {"name": "Frozen Soul", "type": "consumable", "effect": "freeze_enemies", "price": 500, "special": "Freezes all enemies for 1 turn", "source": "Hatred frozen soul"},
 ]
 
-# Sample monsters with loot drops (name, level, health, attack, drops)
+
 monsters: List[Dict] = [
+    # Greenwood Village Monsters (Level 1-2)
     {"name": "Goblin", "level": 1, "health": 50, "attack": 10, "drops": ["Gold Coin", "Wooden Sword"]},
+    {"name": "Wolf", "level": 2, "health": 60, "attack": 12, "drops": ["Wolf Pelt", "Gold Coin"]},
+    {"name": "Forest Spider", "level": 1, "health": 45, "attack": 8, "drops": ["Spider Silk", "Gold Coin"]},
+    {"name": "Bandit", "level": 2, "health": 65, "attack": 14, "drops": ["Leather Armor", "Gold Coin"]},
+    {"name": "Dire Wolf", "level": 2, "health": 70, "attack": 15, "drops": ["Wolf Fang", "Gold Coin"]},
+    {"name": "Goblin Shaman", "level": 2, "health": 55, "attack": 13, "drops": ["Goblin Staff", "Gold Coin"]},
+
+    # Stormhaven Monsters (Level 2-3)
     {"name": "Skeleton", "level": 2, "health": 75, "attack": 15, "drops": ["Gold Coin", "Bone Armor"]},
-    {"name": "Fire Dragon", "level": 5, "health": 150, "attack": 30, "drops": ["Dragon Scale", "Gold Coin", "Flame Sword"]},
-    {"name": "Ice Dragon", "level": 5, "health": 150, "attack": 30, "drops": ["Dragon Scale", "Gold Coin", "Ice Sword"]},
-    {"name": "Dark Knight", "level": 4, "health": 120, "attack": 25, "drops": ["Dark Armor", "Gold Coin"]},
-    {"name": "Troll", "level": 3, "health": 100, "attack": 20, "drops": ["Troll Hide", "Gold Coin"]},
-    {"name": "Vampire", "level": 4, "health": 120, "attack": 25, "drops": ["Blood Gem", "Gold Coin"]},
-    {"name": "Werewolf", "level": 3, "health": 90, "attack": 20, "drops": ["Fur Cloak", "Gold Coin"]},
-    {"name": "Zombie", "level": 1, "health": 40, "attack": 5, "drops": ["Rotten Flesh", "Gold Coin"]},
-    {"name": "Mummy", "level": 2, "health": 60, "attack": 10, "drops": ["Ancient Artifact", "Gold Coin"]},
-    {"name": "Giant Spider", "level": 3, "health": 80, "attack": 15, "drops": ["Spider Silk", "Gold Coin"]},
-    {"name": "spider", "level": 2, "health": 70, "attack": 12, "drops": ["Webbing", "Gold Coin"]},
-    {"name": "Giant", "level": 4, "health": 110, "attack": 25, "drops": ["Giant's Club", "Gold Coin"]},
-    {"name": "Ghost", "level": 4, "health": 100, "attack": 20, "drops": ["Spirit Essence", "Gold Coin"]},
-    {"name": "Hellhound", "level": 5, "health": 130, "attack": 28, "drops": ["Hellfire Gem", "Gold Coin"]},
-    {"name": "Griffin", "level": 5, "health": 140, "attack": 30, "drops": ["Griffin Feather", "Gold Coin"]},
-    {"name": "Harpy", "level": 5, "health": 130, "attack": 28, "drops": ["Harpy Wing", "Gold Coin"]},
+    {"name": "Ghost", "level": 3, "health": 70, "attack": 18, "drops": ["Spirit Essence", "Gold Coin"]},
+    {"name": "Storm Elemental", "level": 3, "health": 85, "attack": 20, "drops": ["Storm Crystal", "Gold Coin"]},
+    {"name": "Pirate Scout", "level": 2, "health": 70, "attack": 16, "drops": ["Cutlass", "Gold Coin"]},
+    {"name": "Haunted Armor", "level": 3, "health": 80, "attack": 22, "drops": ["Cursed Shield", "Gold Coin"]},
+    {"name": "Sea Serpent", "level": 3, "health": 90, "attack": 25, "drops": ["Serpent Scale", "Gold Coin"]},
+    {"name": "Dreadlord Varkhull, the Crimson Abyss Pirate Captain", "level": 5, "health": 150, "attack": 30, "drops": ["Crimson Cutlass", "Gold Coin"]},
+
+    # Dragon's Peak Monsters (Level 5-6)
+    {"name": "Fire Dragon", "level": 6, "health": 200, "attack": 35, "drops": ["Dragon Scale", "Gold Coin", "Flame Sword"]},
+    {"name": "Ice Dragon", "level": 6, "health": 200, "attack": 35, "drops": ["Dragon Scale", "Gold Coin", "Ice Sword"]},
+    {"name": "Electrical Dragon", "level": 6, "health": 200, "attack": 35, "drops": ["Dragon Scale", "Gold Coin", "Lightning Sword"]},
+    {"name": "Plant Dragon", "level": 6, "health": 200, "attack": 35, "drops": ["Dragon Scale", "Gold Coin", "Nature Sword"]},
+    {"name": "Earth Dragon", "level": 6, "health": 200, "attack": 35, "drops": ["Dragon Scale", "Gold Coin", "Earth Sword"]},
+    {"name": "Wind Dragon", "level": 6, "health": 200, "attack": 35, "drops": ["Dragon Scale", "Gold Coin", "Wind Sword"]},
+    {"name": "Water Dragon", "level": 6, "health": 200, "attack": 35, "drops": ["Dragon Scale", "Gold Coin", "Water Sword"]},
+    {"name": "Fire Wyvern", "level": 5, "health": 150, "attack": 28, "drops": ["Wyvern Scale", "Gold Coin"]},
+    {"name": "Ice Wyvern", "level": 5, "health": 150, "attack": 28, "drops": ["Wyvern Scale", "Gold Coin"]},
+    {"name": "Thunder Wyvern", "level": 5, "health": 150, "attack": 28, "drops": ["Wyvern Scale", "Gold Coin"]},
+    {"name": "Earth Wyvern", "level": 5, "health": 150, "attack": 28, "drops": ["Wyvern Scale", "Gold Coin"]},
+    {"name": "Dragon Knight", "level": 5, "health": 150, "attack": 28, "drops": ["Dragon Armor", "Gold Coin"]},
+    {"name": "Water Wyvern", "level": 5, "health": 160, "attack": 30, "drops": ["Wyvern Wing", "Gold Coin"]},
+
+    # Crystal Cave Monsters (Level 3-4)
+    {"name": "Crystal Golem", "level": 4, "health": 120, "attack": 25, "drops": ["Crystal Shard", "Gold Coin"]},
+    {"name": "Cave Troll", "level": 4, "health": 130, "attack": 28, "drops": ["Troll Hide", "Gold Coin"]},
+    {"name": "Crystal Spider", "level": 3, "health": 90, "attack": 22, "drops": ["Crystal Web", "Gold Coin"]},
+    {"name": "Rock Elemental", "level": 4, "health": 140, "attack": 26, "drops": ["Earth Stone", "Gold Coin"]},
+    {"name": "Cave Bat", "level": 3, "health": 80, "attack": 20, "drops": ["Bat Wing", "Gold Coin"]},
+    {"name": "Crystal Tarantula", "level": 4, "health": 110, "attack": 24, "drops": ["Crystal Fang", "Gold Coin"]},
+    {"name": "Crystal Giant Tarantula", "level": 7, "health": 200, "attack": 40, "drops": ["Crystal Eye", "Gold Coin"]},
+    {"name": "Crystal Serpent", "level": 4, "health": 110, "attack": 24, "drops": ["Serpent Scale", "Gold Coin"]},
+    {"name": "Corrupted Miner", "level": 4, "health": 115, "attack": 25, "drops": ["Miner's Pickaxe", "Gold Coin"]},
+
+    # Shadowmere Monsters (Level 4-5)
+    {"name": "Shadow Beast", "level": 4, "health": 110, "attack": 24, "drops": ["Shadow Essence", "Gold Coin"]},
+    {"name": "Dark Knight", "level": 5, "health": 140, "attack": 28, "drops": ["Dark Armor", "Gold Coin"]},
+    {"name": "Wraith", "level": 5, "health": 120, "attack": 30, "drops": ["Soul Gem", "Gold Coin"]},
+    {"name": "Night Stalker", "level": 4, "health": 100, "attack": 26, "drops": ["Night Blade", "Gold Coin"]},
+    {"name": "Shadow Assassin", "level": 5, "health": 130, "attack": 32, "drops": ["Assassin's Dagger", "Gold Coin"]},
+    {"name": "Vampire", "level": 5, "health": 150, "attack": 35, "drops": ["Vampire Fang", "Gold Coin"]},
+    {"name": "Undead Knight", "level": 5, "health": 160, "attack": 38, "drops": ["Undead Blade", "Gold Coin"]},
+    {"name": "Undead Army General","level": 7, "health": 200, "attack": 40, "drops": ["Undead Armor", "Gold Coin"]},
+    {"name": "Undead Army Commander","level": 8, "health": 250, "attack": 50, "drops": ["Undead's Blade", "Gold Coin"]},
+
+    # Frostvale Monsters (Level 3-4)
+    {"name": "Ice Troll", "level": 4, "health": 125, "attack": 26, "drops": ["Frozen Heart", "Gold Coin"]},
+    {"name": "Frost Giant", "level": 4, "health": 140, "attack": 28, "drops": ["Giant's Club", "Gold Coin"]},
+    {"name": "Snow Wolf", "level": 3, "health": 95, "attack": 20, "drops": ["Frost Pelt", "Gold Coin"]},
+    {"name": "Ice Elemental", "level": 4, "health": 115, "attack": 24, "drops": ["Ice Crystal", "Gold Coin"]},
+    {"name": "Frost Wraith", "level": 4, "health": 130, "attack": 30, "drops": ["Wraith Essence", "Gold Coin"]},
+    {"name": "Hatred frozen soul", "level": 5, "health": 150, "attack": 35, "drops": ["Frozen Soul", "Gold Coin"]},
+    {"name": "Ice Revenant", "level": 5, "health": 160, "attack": 32, "drops": ["Frozen Heart", "Gold Coin"]},
+    {"name": "Frost vengeful eye of the snow", "level": 7, "health": 200, "attack": 40, "drops": ["Frost Eye", "Gold Coin"]},
+
+    # Long Shui Zhen Monsters (Level 4-8)
+    {"name": "Dragon Spirit", "level": 5, "health": 130, "attack": 28, "drops": ["Spirit Pearl", "Gold Coin"]},
+    {"name": "Water Elemental", "level": 4, "health": 110, "attack": 24, "drops": ["Water Essence", "Gold Coin"]},
+    {"name": "Jade Warrior", "level": 5, "health": 140, "attack": 26, "drops": ["Jade Sword", "Gold Coin"]},
+    {"name": "Jade General", "level": 5, "health": 150, "attack": 30, "drops": ["Jade Armor", "Gold Coin"]},
+    {"name": "Jade soldier", "level": 4, "health": 120, "attack": 22, "drops": ["Jade Shield", "Gold Coin"]},
+    {"name": "Jade Emperor's Guard", "level": 6, "health": 160, "attack": 32, "drops": ["Jade Shield", "Gold Coin"]},
+    {"name": "Jade Emperor", "level": 8, "health": 390, "attack": 65, "drops": ["Jade Crown", "Gold Coin"]},
+
+    # Jade Lotus Village Monsters (Level 2-3)
+    {"name": "Lotus Spirit", "level": 3, "health": 85, "attack": 18, "drops": ["Lotus Petal", "Gold Coin"]},
+    {"name": "Pond Serpent", "level": 2, "health": 70, "attack": 16, "drops": ["Serpent Scale", "Gold Coin"]},
+    {"name": "Garden Guardian", "level": 3, "health": 90, "attack": 20, "drops": ["Sacred Charm", "Gold Coin"]},
+    {"name": "Lotus Guardian", "level": 3, "health": 95, "attack": 22, "drops": ["Lotus Shield", "Gold Coin"]},
+    {"name": "Koi Empress", "level": 3, "health": 100, "attack": 24, "drops": ["Koi Scale", "Gold Coin"]},
+
+    # Silent Ashes Monsters (Level 5-6)
+    {"name": "Ash Revenant", "level": 6, "health": 160, "attack": 32, "drops": ["Revenant Ash", "Gold Coin"]},
+    {"name": "Cursed Wanderer", "level": 5, "health": 140, "attack": 28, "drops": ["Cursed Relic", "Gold Coin"]},
+    {"name": "Phoenix", "level": 6, "health": 180, "attack": 34, "drops": ["Phoenix Feather", "Gold Coin"]},
+    {"name": "Ash Wraith", "level": 5, "health": 150, "attack": 30, "drops": ["Wraith Essence", "Gold Coin"]},
+    {"name": "Burnt Guardian", "level": 5, "health": 145, "attack": 29, "drops": ["Guardian's Ash", "Gold Coin"]},
+    {"name": "Magmatic Knight,The fallen knight of the ashes", "level": 6, "health": 200, "attack": 40, "drops": ["Knight's Ash", "Gold Coin"]},
+
+    # Thundercliff Hold Monsters (Level 4-5)
+    {"name": "Thunder Elemental", "level": 5, "health": 130, "attack": 28, "drops": ["Storm Crystal", "Gold Coin"]},
+    {"name": "Rock Wyvern", "level": 4, "health": 120, "attack": 26, "drops": ["Wyvern Scale", "Gold Coin"]},
+    {"name": "Storm Hawk", "level": 4, "health": 110, "attack": 24, "drops": ["Hawk Feather", "Gold Coin"]},
+    {"name": "Storm Wyvern", "level": 5, "health": 140, "attack": 30, "drops": ["Wyvern Wing", "Gold Coin"]},
+    {"name": "Thunder Mage", "level": 5, "health": 150, "attack": 32, "drops": ["Thunder Staff", "Gold Coin"]},
+    {"name": "Storm Guardian", "level": 5, "health": 160, "attack": 34, "drops": ["Guardian's Storm", "Gold Coin"]},
+    {"name": "Vision of the Thunder,the core of the storm", "level": 5, "health": 150, "attack": 32, "drops": ["Storm Eye", "Gold Coin"]},
+
+    # Shogunate Of Shirui Monsters (Level 5-9)
+    {"name": "The Shogun", "level": 9, "health": 400, "attack": 70, "drops": ["Samurai Armor", "Gold Coin"]},
+    {"name": "Shogun's Guard", "level": 8, "health": 350, "attack": 60, "drops": ["Shogun's Blade", "Gold Coin"]},
+    {"name": "Jade Samurai", "level": 7, "health": 300, "attack": 50, "drops": ["Jade Armor", "Gold Coin"]},
+    {"name": "Kitsune Warrior", "level": 6, "health": 250, "attack": 40, "drops": ["Kitsune Mask", "Gold Coin"]},
+    {"name": "Tengu Warrior", "level": 6, "health": 240, "attack": 38, "drops": ["Tengu Feather", "Gold Coin"]},
+    {"name": "Kappa Guardian", "level": 5, "health": 220, "attack": 35, "drops": ["Kappa Shell", "Gold Coin"]},
+    {"name": "Oni Berserker", "level": 7, "health": 280, "attack": 45, "drops": ["Oni Mask", "Gold Coin"]},
+    {"name": "Corrupted Ninja", "level": 5, "health": 200, "attack": 30, "drops": ["Ninja Star", "Gold Coin"]},
+    {"name": "Shadow Samurai", "level": 6, "health": 260, "attack": 42, "drops": ["Shadow Blade", "Gold Coin"]},
+    {"name": "Possessed Katana", "level": 5, "health": 210, "attack": 36, "drops": ["Cursed Katana", "Gold Coin"]},
 ]
+
 
 # Dungeons with monsters and loot
 dungeons: List[Dict] = [
-    {"name": "Goblin Cave", "monsters": ["Goblin", "Skeleton"], "loot": ["Gold Coin", "Healing Potion"]},
-    {"name": "Dark Forest", "monsters": ["Troll", "Goblin"], "loot": ["Mystic Gem", "Gold Coin"]},
+    # Greenwood Village Dungeons
+    {"name": "Goblin's Hideout", "monsters": ["Goblin", "Wolf"], "loot": ["Wooden Sword", "Wolf Pelt", "Gold Coin"]},
+    {"name": "Bandit Camp", "monsters": ["Bandit"], "loot": ["Leather Armor", "Gold Coin"]},
+    {"name": "Forest Spider Den", "monsters": ["Forest Spider"], "loot": ["Spider Silk", "Gold Coin"]},
+    {"name": "Ancient Ruins", "monsters": ["Forest Spider", "Goblin"], "loot": ["Ancient Relic", "Gold Coin"]},
+    {"name": "Goblin Fortress", "monsters": ["Goblin", "Dire Wolf"], "loot": ["Goblin Staff", "Gold Coin"]},
+    {"name": "Cave of Shadows", "monsters": ["Goblin Shaman"], "loot": ["Gold Coin", "Goblin Staff"]},
+    
+    # Stormhaven Dungeons
+    {"name": "Haunted Crypt", "monsters": ["Skeleton", "Ghost"], "loot": ["Bone Armor", "Spirit Essence", "Gold Coin"]},
+    {"name": "Pirate's Cove", "monsters": ["Pirate Scout"], "loot": ["Cutlass", "Gold Coin"]},
+    {"name": "Storm Fortress", "monsters": ["Storm Elemental"], "loot": ["Storm Crystal", "Gold Coin"]},
+    {"name": "Cursed Shipwreck", "monsters": ["Haunted Armor"], "loot": ["Cursed Shield", "Gold Coin"]},
+    {"name": "Ghost Ship", "monsters": ["Sea Serpent"], "loot": ["Serpent Scale", "Gold Coin"]},
+    {"name": "Dreadlord's Sunken Ship", "monsters": ["Dreadlord Varkhull, the Crimson Abyss Pirate Captain"], "loot": ["Crimson Cutlass", "Gold Coin"]},
+    {"name": "Cursed Lighthouse", "monsters": ["Haunted Armor", "Ghost"], "loot": ["Cursed Shield", "Gold Coin"]},
+    {"name": "Cursed Graveyard", "monsters": ["Skeleton", "Ghost"], "loot": ["Bone Armor", "Spirit Essence", "Gold Coin"]},
+    
+    # Dragon's Peak Dungeons
     {"name": "Fire Dragon's Lair", "monsters": ["Fire Dragon"], "loot": ["Dragon Scale", "Flame Sword", "Gold Coin"]},
-    {"name": "Ice Dragon's Lair", "monsters": ["Ice Dragon"], "loot": ["Dragon Scale", "Ice Sword", "Gold Coin"]},
-    {"name": "Vampire Castle", "monsters": ["Vampire", "Skeleton"], "loot": ["Blood Gem", "Gold Coin"]},
-    {"name": "Werewolf Den", "monsters": ["Werewolf", "Zombie"], "loot": ["Fur Cloak", "Gold Coin"]},
-    {"name": "Mummy Tomb", "monsters": ["Mummy", "Skeleton"], "loot": ["Ancient Artifact", "Gold Coin"]},
-    {"name": "Giant Spider's Web", "monsters": ["Giant Spider", "spider"], "loot": ["Spider Silk", "Gold Coin"]},
-    {"name": "Giant's Lair", "monsters": ["Giant"], "loot": ["Giant's Club", "Gold Coin"]},
-    {"name": "Ghost Town", "monsters": ["Ghost"], "loot": ["Spirit Essence", "Gold Coin"]},
-    {"name": "Hellhound's Den", "monsters": ["Hellhound"], "loot": ["Hellfire Gem", "Gold Coin"]},
-    {"name": "Griffin's Nest", "monsters": ["Griffin"], "loot": ["Griffin Feather", "Gold Coin"]},
-    {"name": "Harpy's Roost", "monsters": ["Harpy"], "loot": ["Harpy Wing", "Gold Coin"]},
+    {"name": "Ice Dragon's Nest", "monsters": ["Ice Dragon"], "loot": ["Dragon Scale", "Ice Sword", "Gold Coin"]},
+    {"name": "Electrical Dragon's Roost", "monsters": ["Electrical Dragon"], "loot": ["Dragon Scale", "Lightning Sword", "Gold Coin"]},
+    {"name": "Plant Dragon's Grove", "monsters": ["Plant Dragon"], "loot": ["Dragon Scale", "Nature Sword", "Gold Coin"]},
+    {"name": "Earth Dragon's Cavern", "monsters": ["Earth Dragon"], "loot": ["Dragon Scale", "Earth Sword", "Gold Coin"]},
+    {"name": "Wind Dragon's Summit", "monsters": ["Wind Dragon"], "loot": ["Dragon Scale", "Wind Sword", "Gold Coin"]},
+    {"name": "Water Dragon's Abyss", "monsters": ["Water Dragon"], "loot": ["Dragon Scale", "Water Sword", "Gold Coin"]},
+    {"name": "Fire Wyvern Nest", "monsters": ["Fire Wyvern"], "loot": ["Wyvern Scale", "Gold Coin"]},
+    {"name": "Ice Wyvern Cave", "monsters": ["Ice Wyvern"], "loot": ["Wyvern Scale", "Gold Coin"]},
+    {"name": "Thunder Wyvern Peak", "monsters": ["Thunder Wyvern"], "loot": ["Wyvern Scale", "Gold Coin"]},
+    {"name": "Earth Wyvern Den", "monsters": ["Earth Wyvern"], "loot": ["Wyvern Scale", "Gold Coin"]},
+    {"name": "Dragon Knight's Fortress", "monsters": ["Dragon Knight"], "loot": ["Dragon Armor", "Gold Coin"]},
+    {"name": "Water Wyvern Lagoon", "monsters": ["Water Wyvern"], "loot": ["Wyvern Wing", "Gold Coin"]},
+    
+    # Crystal Cave Dungeons
+    {"name": "Crystal Depths", "monsters": ["Crystal Golem", "Cave Troll"], "loot": ["Crystal Shard", "Troll Hide", "Gold Coin"]},
+    {"name": "Cave of Echoes", "monsters": ["Crystal Spider", "Rock Elemental"], "loot": ["Crystal Web", "Earth Stone", "Gold Coin"]},
+    {"name": "Crystal Cavern", "monsters": ["Cave Bat", "Crystal Tarantula"], "loot": ["Bat Wing", "Crystal Fang", "Gold Coin"]},
+    {"name": "Crystal Golem's Lair", "monsters": ["Crystal Giant Tarantula"], "loot": ["Crystal Eye", "Gold Coin"]},
+    {"name": "Serpent's Lair", "monsters": ["Crystal Serpent"], "loot": ["Serpent Scale", "Gold Coin"]},
+    {"name": "Corrupted Miner's Hideout", "monsters": ["Corrupted Miner"], "loot": ["Miner's Pickaxe", "Gold Coin"]},
+    {"name": "Crystal Cavern", "monsters": ["Crystal Golem", "Cave Troll"], "loot": ["Crystal Shard", "Troll Hide", "Gold Coin"]},
+    
+    # Shadowmere Dungeons
+    {"name": "Shadow Keep", "monsters": ["Shadow Beast", "Dark Knight"], "loot": ["Shadow Essence", "Dark Armor", "Gold Coin"]},
+    {"name": "Wraith's Lair", "monsters": ["Wraith"], "loot": ["Soul Gem", "Gold Coin"]},
+    {"name": "Night Stalker Den", "monsters": ["Night Stalker"], "loot": ["Night Blade", "Gold Coin"]},
+    {"name": "Assassin's Hideout", "monsters": ["Shadow Assassin"], "loot": ["Assassin's Dagger", "Gold Coin"]},
+    {"name": "Dark Fortress", "monsters": ["Dark Knight"], "loot": ["Dark Armor", "Gold Coin"]},
+    {"name": "Vampire's Crypt", "monsters": ["Vampire"], "loot": ["Vampire Fang", "Gold Coin"]},
+    {"name": "Undead Fortress", "monsters": ["Undead Knight"], "loot": ["Undead Blade", "Gold Coin"]},
+    {"name": "Undead Army Base", "monsters": ["Undead Army General","Undead Army Commander"], "loot": ["Undead Armor", "Gold Coin"]},
+    
+    # Frostvale Dungeons
+    {"name": "Frozen Halls", "monsters": ["Ice Troll", "Frost Giant"], "loot": ["Frozen Heart", "Giant's Club", "Gold Coin"]},
+    {"name": "Snowy Cavern", "monsters": ["Snow Wolf", "Ice Elemental"], "loot": ["Frost Pelt", "Ice Crystal", "Gold Coin"]},
+    {"name": "Frost Wraith's Lair", "monsters": ["Frost Wraith"], "loot": ["Wraith Essence", "Gold Coin"]},
+    {"name": "Troll's Den", "monsters": ["Ice Troll"], "loot": ["Frozen Heart", "Gold Coin"]},
+    {"name": "Frost Revenant", "monsters": ["Ice Revenant"], "loot": ["Frozen Heart", "Gold Coin"]},
+    {"name": "Frozen Eye Cave", "monsters": ["Frost vengeful eye of the snow"], "loot": ["Frost Eye", "Gold Coin"]},
+
+    # Silent Ashes Dungeons
+    {"name": "Ash Ruins", "monsters": ["Ash Revenant", "Cursed Wanderer"], "loot": ["Ancient Relic", "Cursed Gem", "Gold Coin"]},
+    {"name": "Phoenix Nest", "monsters": ["Phoenix"], "loot": ["Phoenix Feather", "Gold Coin"]},
+    {"name": "Ash Wraith's Den", "monsters": ["Ash Wraith"], "loot": ["Wraith Essence", "Gold Coin"]},
+    {"name": "Guardian's Ash Fortress", "monsters": ["Burnt Guardian"], "loot": ["Guardian's Ash", "Gold Coin"]},
+    {"name": "Magmatic Knight's Lair", "monsters": ["Magmatic Knight,The fallen knight of the ashes"], "loot": ["Knight's Ash", "Gold Coin"]},
+    {"name": "Vision of the Thunder Cave", "monsters": ["Vision of the Thunder,the core of the storm"], "loot": ["Storm Eye", "Gold Coin"]},
+
+    # Long Shui Zhen Dungeons
+    {"name": "Water Palace", "monsters": ["Water Elemental", "Jade Warrior"], "loot": ["Water Essence", "Jade Sword", "Gold Coin"]},
+    {"name": "Dragon Temple", "monsters": ["Dragon Spirit"], "loot": ["Spirit Pearl", "Gold Coin"]},
+    {"name": "Jade General's Fortress", "monsters": ["Jade General","Jade Soldier"], "loot": ["Jade Armor", "Gold Coin"]},
+    {"name": "Jade Emperor's Chamber", "monsters": ["Jade Emperor", "Jade Emperor's Guard"], "loot": ["Jade Crown", "Gold Coin"]},
+
+    # Jade Lotus Village Dungeons
+    {"name": "Lotus Sanctuary", "monsters": ["Lotus Spirit", "Pond Serpent"], "loot": ["Lotus Petal", "Serpent Scale", "Gold Coin"]},
+    {"name": "Garden of Spirits", "monsters": ["Garden Guardian"], "loot": ["Sacred Charm", "Gold Coin"]},
+    {"name": "Lotus Shrine", "monsters": ["Lotus Guardian"], "loot": ["Lotus Shield", "Gold Coin"]},
+    {"name": "Koi Pond", "monsters": ["Koi Empress"], "loot": ["Koi Scale", "Gold Coin"]},
+
+    # Thundercliff Hold Dungeons
+    {"name": "Storm Fortress", "monsters": ["Thunder Elemental", "Rock Wyvern"], "loot": ["Storm Crystal", "Wyvern Scale", "Gold Coin"]},
+    {"name": "Thunder Mage's Tower", "monsters": ["Thunder Mage"], "loot": ["Thunder Staff", "Gold Coin"]},
+    {"name": "Storm Wyvern Nest", "monsters": ["Storm Wyvern"], "loot": ["Wyvern Wing", "Gold Coin"]},
+    {"name": "Storm Guardian's Keep", "monsters": ["Storm Guardian"], "loot": ["Guardian's Storm", "Gold Coin"]},
+
+    # Ember Hollow Dungeons
+    {"name": "Lava Cavern", "monsters": ["Lava Hound", "Molten Wraith"], "loot": ["Lava Stone", "Gold Coin"]},
+    {"name": "Ember Fortress", "monsters": ["Fire Elemental"], "loot": ["Ember Crystal", "Gold Coin"]},
+    {"name": "Ashen Ruins", "monsters": ["Ash Elemental"], "loot": ["Ashen Gem", "Gold Coin"]},
+    {"name": "Fire Wyvern Nest", "monsters": ["Fire Wyvern"], "loot": ["Wyvern Scale", "Gold Coin"]},
+    {"name": "Ember Dragon's Lair", "monsters": ["Ember Dragon"], "loot": ["Dragon Scale", "Gold Coin"]},
+
+    # Shogunate Of Shirui Dungeons
+    {"name": "Shogun's Fortress", "monsters": ["The Shogun", "Shogun's Guard"], "loot": ["Samurai Armor", "Shogun's Blade", "Gold Coin"]},
+    {"name": "Kitsune Shrine", "monsters": ["Kitsune Warrior"], "loot": ["Kitsune Mask", "Gold Coin"]},
+    {"name": "Jade Temple", "monsters": ["Jade Samurai"], "loot": ["Jade Armor", "Gold Coin"]},
+    {"name": "Tengu's Nest", "monsters": ["Tengu Warrior"], "loot": ["Tengu Feather", "Gold Coin"]},
+    {"name": "Kappa's Cave", "monsters": ["Kappa Guardian"], "loot": ["Kappa Shell", "Gold Coin"]},
+    {"name": "Oni's Lair", "monsters": ["Oni Berserker"], "loot": ["Oni Mask", "Gold Coin"]},
+    {"name": "Corrupted Ninja's Hideout", "monsters": ["Corrupted Ninja"], "loot": ["Ninja Star", "Gold Coin"]},
+    {"name": "Shadow Samurai's Fortress", "monsters": ["Shadow Samurai"], "loot": ["Shadow Blade", "Gold Coin"]},
+    {"name": "Possessed Katana's Lair", "monsters": ["Possessed Katana"], "loot": ["Cursed Katana", "Gold Coin"]},
 ]
 
 # Function to display headers
@@ -224,7 +617,7 @@ def print_header(title: str) -> None:
 # Show the help menu
 def show_help() -> None:
     print("""
-EPIC RPG CLI - COMMANDS
+TEXTRP CLI - COMMANDS
 
 PROGRESS
 /start            - Starter guide
@@ -298,7 +691,8 @@ def handle_command(cmd: str) -> None:
         "/start": start_guide,
         "/help": show_help,
         "/pet": show_pets,
-        "/mobs": show_mobs,
+        "/search": search_resources,
+        "/location_check": check_location,
         "/professions": show_professions,
         "/stats": show_stats,
         "/shop": visit_shop,
@@ -373,7 +767,6 @@ def random_tip() -> None:
     tips = [
         "Always carry health potions!",
         "Upgrade your gear before dungeons.",
-        "Check for redeemable codes weekly!",
     ]
     print_header("Random Tip")
     print(random.choice(tips))
@@ -766,6 +1159,10 @@ def show_inventory() -> None:
         print(f"{idx}. {item}")
 
 def create_character() -> None:
+    if user_data["class"] is not None:
+        print("You have already created a character!")
+        return
+        
     print_header("Character Creation")
     print("Choose your class:")
     for class_name in CHARACTER_CLASSES:
@@ -791,14 +1188,167 @@ def create_character() -> None:
 villages = [
     {"name": "Greenwood", "population": 150, "special_items": ["Herbal Potion", "Wooden Bow"]},
     {"name": "Stonehaven", "population": 200, "special_items": ["Iron Sword", "Shield"]},
-    # ... other villages
+    {"name": "Riverbend", "population": 120, "special_items": ["Fishing Rod", "Water Flask"]},
+    {"name": "Snowpeak", "population": 80, "special_items": ["Warm Cloak", "Ice Pick"]},
+    {"name": "Emberfall", "population": 100, "special_items": ["Firestarter", "Lava Stone"]},
+    {"name": "Thundercliff", "population": 90, "special_items": ["Lightning Rod", "Storm Cloak"]},
+    {"name": "Jade Lotus", "population": 110, "special_items": ["Lotus Blossom", "Jade Pendant"]},
+    {"name": "Shogunate of Shirui", "population": 130, "special_items": ["Samurai Armor", "Katana"]},
+    {"name": "Long Shui Zhen", "population": 140, "special_items": ["Dragon Scale", "Water Orb"]},
 ]
 
 # Sample biomes (added for completeness)
 biomes = [
-    {"name": "Forest", "description": "A lush green area filled with trees and wildlife."},
-    {"name": "Desert", "description": "A vast sandy area with scarce resources."},
-    # ... other biomes
+{
+   "name":"Forest",
+   "description":"A lush green area filled with trees and wildlife."
+},
+{
+   "name":"Desert",
+   "description":"A vast sandy area with scarce resources."
+},
+{
+   "name":"Cave",
+   "description":"A dark underground area with hidden treasures."
+},
+{
+   "name":"Snowy Peaks",
+   "description":"A cold mountainous region with snow-covered terrain."
+},
+{
+   "name":"Volcanic Region",
+   "description":"A hot area with lava flows and volcanic activity."
+},
+{
+   "name":"Swamp",
+   "description":"A murky area filled with water and strange creatures."
+},
+{
+   "name":"Ocean",
+   "description":"A vast body of water with islands and sea monsters."
+},
+{
+   "name":"Sky Islands",
+   "description":"Floating islands high in the sky, accessible by air."
+},
+{
+   "name":"Crystal Caverns",
+   "description":"A cave filled with sparkling crystals and rare minerals."
+},
+{
+   "name":"Jungle",
+   "description":"A dense and tropical area filled with towering trees, exotic plants, and wild animals."
+},
+{
+   "name":"Tundra",
+   "description":"A cold, barren landscape with little vegetation, covered in permafrost and snow."
+},
+{
+   "name":"Savannah",
+   "description":"A vast grassy plain with scattered trees, home to many herds of animals."
+},
+{
+   "name":"Fungal Forest",
+   "description":"A damp, dark forest where giant fungi dominate the landscape instead of trees."
+},
+{
+   "name":"Mountain Range",
+   "description":"A towering series of mountains, often with dangerous cliffs and peaks, and home to hardy creatures."
+},
+{
+   "name":"Rainforest",
+   "description":"A hot, humid area with dense foliage, continuous rainfall, and diverse wildlife."
+},
+{
+   "name":"Barren Wasteland",
+   "description":"An empty, desolate region with little to no life, plagued by sandstorms and harsh winds."
+},
+{
+   "name":"Underwater Ruins",
+   "description":"Sunken cities and forgotten structures beneath the ocean, filled with ancient artifacts and dangers."
+},
+{
+   "name":"Meadow",
+   "description":"A peaceful, open field filled with colorful flowers, tall grasses, and peaceful wildlife."
+},
+{
+   "name":"Mystic Forest",
+   "description":"A magical forest filled with glowing plants, enchanted creatures, and hidden secrets."
+},
+{
+   "name":"Twilight Grove",
+   "description":"A mysterious forest where the sun never fully sets, creating a perpetual twilight with bioluminescent plants and glowing creatures."
+},
+{
+   "name":"Corrupted Land",
+   "description":"A dark and twisted environment where the very soil is tainted, giving rise to dangerous, mutated creatures and toxic flora."
+},
+{
+   "name":"Icy Wastes",
+   "description":"A barren, freezing expanse filled with endless ice fields, glaciers, and the occasional frozen lake hiding ancient secrets."
+},
+{
+   "name":"Oasis",
+   "description":"A rare, fertile area in the desert, featuring a small pool of water surrounded by palm trees and desert wildlife."
+},
+{
+   "name":"Lush Highlands",
+   "description":"A rolling green landscape with gentle hills, fertile soil, and peaceful wildlife, perfect for farming or settling."
+},
+{
+   "name":"Boreal Forest",
+   "description":"A cold and dense forest filled with evergreens and snow, inhabited by resilient wildlife adapted to the harsh conditions."
+},
+{
+   "name":"Sunken Abyss",
+   "description":"An underwater trench deep in the ocean, home to strange abyssal creatures and ancient, sunken ruins."
+},
+{
+   "name":"Shroom Cavern",
+   "description":"A vast underground network filled with towering mushrooms, glowing spores, and rare fungal lifeforms."
+},
+{
+   "name":"Frostbitten Tundra",
+   "description":"An arctic wasteland where the air is frozen, and snowstorms are a constant threat, with dangerous wildlife adapted to the extreme cold."
+},
+{
+   "name":"Radiant Plains",
+   "description":"A glowing meadow where flowers and grasses emit light, creating a serene and ethereal landscape filled with beauty and tranquility."
+},
+{
+   "name":"Ashen Wastes",
+   "description":"A scorched, desolate plain left behind by ancient fires, where the ground is cracked, and the air is thick with ash and smoke."
+},
+{
+   "name":"Celestial Peaks",
+   "description":"Towering mountain ranges that reach beyond the clouds, where the air is thin, and the environment is home to rare celestial beings."
+},
+{
+   "name":"Mystic Marsh",
+   "description":"A foggy and swampy area filled with enchanted waters, strange will-o'-the-wisps, and ancient trees with whispered secrets."
+},
+{
+   "name":"Crystal Fields",
+   "description":"Vast plains where the earth itself is covered with shimmering crystals, creating a dazzling landscape that’s both beautiful and treacherous."
+},
+{
+   "name":"Vibrant Reef",
+   "description":"A colorful underwater biome teeming with vibrant corals, exotic fish, and rare underwater plants, but also home to deadly sea predators."
+},
+{
+   "name":"Sandstorm Flats",
+   "description":"A vast desert landscape constantly ravaged by powerful sandstorms, leaving only remnants of ancient structures buried beneath the dunes."
+},
+{
+   "name":"The Nether",
+   "description":"A fiery, chaotic dimension filled with volcanic terrain, strange creatures, and hostile environments, with a constant threat of fire and lava."
+},
+{
+   "name":"Skyward Cavern",
+   "description":"A network of caves suspended in the sky, connected by floating platforms and filled with rare ores and aerial creatures."
+}
+
+
 ]
 
 # Horse festival function (added for completeness)
@@ -1020,6 +1570,63 @@ def check_level_up() -> None:
 def show_weapon_info() -> None:
     print_header("Weapon Information")
 
+def check_location() -> None:
+    print_header("Location Information")
+    current = user_data["current_area"]
+    
+    print("Current Location:", current)
+    if current in LOCATIONS:
+        loc_info = LOCATIONS[current]
+        print(f"\nType: {loc_info['type']}")
+        print(f"Description: {loc_info['description']}")
+        if 'shops' in loc_info:
+            print(f"Available Shops: {', '.join(loc_info['shops'])}")
+        if 'monsters' in loc_info:
+            print(f"Local Monsters: {', '.join(loc_info['monsters'])}")
+    
+    print("\nAll Available Locations:")
+    for name, info in LOCATIONS.items():
+        print(f"\n{name}:")
+        print(f"  Type: {info['type']}")
+        print(f"  Description: {info['description']}")
+    
+    print("\nAvailable Dungeons:")
+    for dungeon in dungeons:
+        print(f"\n{dungeon['name']}:")
+        print(f"  Monsters: {', '.join(dungeon['monsters'])}")
+        print(f"  Possible Loot: {', '.join(dungeon['loot'])}")
+
+def search_resources() -> None:
+    print_header("Resource Search")
+    search_type = random.choice(["monster", "material"])
+    
+    if search_type == "monster":
+        area_monsters = [m for m in monsters if m["name"] in LOCATIONS.get(user_data["current_area"], {}).get("monsters", [])]
+        if area_monsters:
+            monster = random.choice(area_monsters)
+            print(f"You found a {monster['name']}!")
+            print(f"Level: {monster['level']}")
+            print(f"Health: {monster['health']}")
+            print(f"Attack: {monster['attack']}")
+            print(f"Possible drops: {', '.join(monster['drops'])}")
+        else:
+            print("No monsters found in this area.")
+    else:
+        available_materials = [name for name, info in MATERIALS.items() 
+                             if user_data["current_area"] in info["areas"]]
+        if available_materials:
+            material = random.choice(available_materials)
+            tool_required = MATERIALS[material]["tool_required"]
+            print(f"You found {material}!")
+            if tool_required:
+                print(f"Tool required: {tool_required}")
+            if tool_required in user_data["tools"]:
+                print("You have the right tool to gather this!")
+            elif tool_required:
+                print("You need the right tool to gather this.")
+        else:
+            print("No materials found in this area.")
+
 def show_pets() -> None:
     print_header("Pet System")
     if not user_data["pets"]:
@@ -1028,7 +1635,7 @@ def show_pets() -> None:
         available_pets = ["Cat", "Dog", "Dragon Hatchling", "Phoenix Chick"]
         for i, pet in enumerate(available_pets, 1):
             print(f"{i}. {pet}")
-        
+
         try:
             choice = input("\nChoose a pet to adopt (0 to cancel): ")
             if choice.isdigit() and 1 <= int(choice) <= len(available_pets):
@@ -1044,17 +1651,29 @@ def show_pets() -> None:
 
 def show_professions() -> None:
     print_header("Professions")
-    professions = {
-        "Mining": "Gather ore and precious stones",
-        "Herbalism": "Collect and process herbs",
-        "Smithing": "Craft weapons and armor",
-        "Alchemy": "Create potions and elixirs"
-    }
     
+    if user_data["has_chosen_profession"]:
+        print(f"Your current profession: {user_data['profession']}")
+        if user_data["profession"] in PROFESSIONS:
+            bonuses = PROFESSIONS[user_data["profession"]]
+            print("\nProfession bonuses:")
+            print(f"Gathering bonus for: {', '.join(bonuses['gather_bonus'])}")
+            print(f"Crafting bonus for: {', '.join(bonuses['craft_bonus'])}")
+        return
+        
     print("Available professions:")
-    for prof, desc in professions.items():
+    for prof, bonuses in PROFESSIONS.items():
         print(f"\n{prof}:")
-        print(f"  {desc}")
+        print(f"  Gathering bonus: {', '.join(bonuses['gather_bonus'])}")
+        print(f"  Crafting bonus: {', '.join(bonuses['craft_bonus'])}")
+    
+    choice = input("\nChoose a profession (or press Enter to skip): ").capitalize()
+    if choice in PROFESSIONS:
+        user_data["profession"] = choice
+        user_data["has_chosen_profession"] = True
+        print(f"\nYou are now a {choice}!")
+    elif choice:
+        print("Invalid profession choice.")
     for weapon, stats in WEAPONS.items():
         print(f"\n{weapon}:")
         print(f"  Damage: {stats['damage']}")
