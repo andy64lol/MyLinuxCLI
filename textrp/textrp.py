@@ -563,7 +563,7 @@ def save_game() -> None:
 
 def load_game() -> bool:
     try:
-        with open("savegame.json", "r") as f:
+        with open("savegame.json", "r", encoding='utf-8') as f:
             global user_data
             user_data = json.load(f)
         print("Game loaded successfully!")
