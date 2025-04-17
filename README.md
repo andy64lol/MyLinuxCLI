@@ -1,7 +1,39 @@
 # MyLinuxCLI
 
-A lil library of my own Linux CLI.
+A personal collection of handy Linux CLI commands and tools.
 
 ---
 
-> made by andy64lol
+## Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/andy64lol/MyLinuxCLI.git
+cd MyLinuxCLI
+```
+
+(Optional) Add it to your PATH:
+
+```bash
+echo 'export PATH="$PATH:$(pwd)"' >> ~/.bashrc
+source ~/.bashrc
+```
+
+## Usage
+
+Simply run the scripts from the terminal:
+
+```bash
+./(insert name).sh
+```
+
+Make sure the scripts are executable:
+
+```bash
+chmod +x run_(whatever the app is).sh
+```
+
+---
+
+> Created by **andy64lol**
