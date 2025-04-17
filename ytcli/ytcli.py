@@ -15,20 +15,20 @@ Setup:
         ytcli.py setapi YOUR_API_KEY
 
 Usage:
-    ytcli.py setapi <api_key>            Save API key to config file
-    ytcli.py search <query> [-n N]       Search YouTube and record to history
-    ytcli.py info <video_id>             Show metadata for a YouTube video
-    ytcli.py download <video_id> [-f]    Download a video (using yt-dlp API)
-    ytcli.py play <video_id>             Play a video in VLC or mpv
-    ytcli.py playlist create <name>      Create a new playlist
-    ytcli.py playlist add <name> <id>    Add video ID to a playlist
-    ytcli.py history                     Show command history
-    ytcli.py test                        Run built-in tests
+    ytcli.py setapi <api_key>                Save API key to config file
+    ytcli.py search <query> [-n N]           Search YouTube and record to history
+    ytcli.py info <video_id>                 Show metadata for a YouTube video
+    ytcli.py download <video_id> [-f FMT]    Download a video (using yt-dlp API)
+    ytcli.py play <video_id>                 Play a video in VLC or mpv
+    ytcli.py playlist create <name>          Create a new playlist
+    ytcli.py playlist add <name> <id>        Add video ID to a playlist
+    ytcli.py history                         Show command history
+    ytcli.py test                            Run built-in tests
 
 Configuration files:
-    CONFIG_FILE: ~/.ytcli_config       (JSON storing your API key)
-    HISTORY_FILE: ~/.ytcli_history     (one JSON entry per line)
-    PLAYLIST_FILE: ~/.ytcli_playlists  (JSON mapping of playlist to video IDs)
+    CONFIG_FILE: ~/.ytcli_config             (JSON storing your API key)
+    HISTORY_FILE: ~/.ytcli_history           (one JSON entry per line)
+    PLAYLIST_FILE: ~/.ytcli_playlists        (JSON mapping of playlist to video IDs)
 """
 import os
 import sys
@@ -193,17 +193,22 @@ def run_tests():
         def setUp(self):
             self.pfile = tempfile.NamedTemporaryFile(delete=False).name
             self.cfile = tempfile.NamedTemporaryFile(delete=False).name
-            global PLAYLIST_FILE, CONFIG_FILE
+            self.hfile = tempfile.NamedTemporaryFile(delete=False).name
+            global PLAYLIST_FILE, CONFIG_FILE, HISTORY_FILE
             self.orig_pl = PLAYLIST_FILE
             self.orig_cf = CONFIG_FILE
+            self.orig_hf = HISTORY_FILE
             PLAYLIST_FILE = self.pfile
             CONFIG_FILE = self.cfile
+            HISTORY_FILE = self.hfile
         def tearDown(self):
             os.unlink(self.pfile)
             os.unlink(self.cfile)
-            global PLAYLIST_FILE, CONFIG_FILE
+            os.unlink(self.hfile)
+            global PLAYLIST_FILE, CONFIG_FILE, HISTORY_FILE
             PLAYLIST_FILE = self.orig_pl
             CONFIG_FILE = self.orig_cf
+            HISTORY_FILE = self.orig_hf
         def test_create_and_add(self):
             create_playlist('test')
             pl = load_playlists()
@@ -228,36 +233,53 @@ def main():
     parser = argparse.ArgumentParser(prog='ytcli')
     sub = parser.add_subparsers(dest='cmd', required=True)
 
-    sub.add_parser('setapi').add_argument('key', help='YouTube API key')
-    sub.add_parser('search').add_argument('query')
-    sub.add_parser('info').add_argument('video_id')
+    # setapi
+    setapi = sub.add_parser('setapi')
+    setapi.add_argument('key', help='YouTube API key')
+    # search
+    search = sub.add_parser('search')
+    search.add_argument('query', help='Search query')
+    search.add_argument('-n', '--max-results', dest='max_results', type=int, default=5,
+                        help='Number of search results to return')
+    # info
+    info = sub.add_parser('info')
+    info.add_argument('video_id', help='YouTube video ID')
+    # download
     dl = sub.add_parser('download')
-    dl.add_argument('video_id')
-    dl.add_argument('-f', '--format', help='format ext')
-    sub.add_parser('play').add_argument('video_id')
+    dl.add_argument('video_id', help='YouTube video ID')
+    dl.add_argument('-f', '--format', dest='format', help='Desired video format ext')
+    # play
+    play = sub.add_parser('play')
+    play.add_argument('video_id', help='YouTube video ID')
+    # playlist
     pl = sub.add_parser('playlist')
     pl_sub = pl.add_subparsers(dest='pl_cmd', required=True)
-    pl_sub.add_parser('create').add_argument('name')
-    pl_add = pl_sub.add_parser('add')
-    pl_add.add_argument('name')
-    pl_add.add_argument('video_id')
+    create = pl_sub.add_parser('create')
+    create.add_argument('name', help='Playlist name')
+    add = pl_sub.add_parser('add')
+    add.add_argument('name', help='Playlist name')
+    add.add_argument('video_id', help='YouTube video ID to add')
+    # history
     sub.add_parser('history')
+    # test
     sub.add_parser('test')
 
     args = parser.parse_args()
     if args.cmd == 'setapi':
         set_api_key(args.key)
     elif args.cmd == 'search':
-        search_videos(args.query, getattr(args, 'n', 5) or 5)
+        search_videos(args.query, args.max_results)
     elif args.cmd == 'info':
         video_info(args.video_id)
     elif args.cmd == 'download':
-        download_video(args.video_id, getattr(args, 'format', None))
+        download_video(args.video_id, args.format)
     elif args.cmd == 'play':
         play_video(args.video_id)
     elif args.cmd == 'playlist':
-        if args.pl_cmd == 'create': create_playlist(args.name)
-        elif args.pl_cmd == 'add': add_to_playlist(args.name, args.video_id)
+        if args.pl_cmd == 'create':
+            create_playlist(args.name)
+        elif args.pl_cmd == 'add':
+            add_to_playlist(args.name, args.video_id)
     elif args.cmd == 'history':
         show_history()
     elif args.cmd == 'test':
