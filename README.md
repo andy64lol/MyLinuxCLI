@@ -1,4 +1,6 @@
 # MyLinuxCLI
+![MyLinuxCLI](https://img.shields.io/badge/MyLinuxCLI-Python%20%7C%20Bash-blue?logo=python&logoColor=white&labelColor=222&style=for-the-badge)
+
 
 A personal collection of handy Linux CLI commands and tools.
 
