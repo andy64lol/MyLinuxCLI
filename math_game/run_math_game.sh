@@ -1,5 +1,13 @@
 #!/bin/bash
 
-echo "Running the math game..."
-# A simple wrapper to run the Python math game
-python3 math_game.py "$@" || { echo "Failed to run math_game.py"; exit 1; }
+# A simple shell wrapper for the hacker_simulator.py script
+
+# Check if Python is installed
+if ! command -v python3 &> /dev/null
+then
+    echo "Python3 is not installed. Please install it to run this script."
+    exit 1
+fi
+
+# Run the hacker_simulator.py script with any provided arguments
+python3 math_game.py "$@"
