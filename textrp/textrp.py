@@ -1,17 +1,17 @@
 import sys
 import random
 import json
+import os
+import time
 from typing import List, Dict, Optional
 from datetime import datetime
 
-# Constants
 INITIAL_GOLD = 100
 INITIAL_HEALTH = 100
 EXP_TO_LEVEL = 100
 CRITICAL_CHANCE = 0.15
 DODGE_CHANCE = 0.1
 
-# Weapon types and their properties
 WEAPONS = {
     "Wooden Sword": {"damage": 5, "speed": 1.0, "price": 30},
     "Bone Sword": {"damage": 7, "speed": 1.0, "price": 50},
@@ -28,9 +28,10 @@ WEAPONS = {
     "Crossbow": {"damage": 15, "speed": 0.6, "price": 200},
     "Katana": {"damage": 22, "speed": 1.0, "price": 350},
     "Elder Wand": {"damage": 30, "speed": 1.0, "price": 500, "effect": "ultimate"},
+    "Mjolnir": {"damage": 35, "speed": 0.9, "price": 600, "effect": "lightning"},
+    "Vorpal Blade": {"damage": 25, "speed": 1.0, "price": 700, "effect": "vorpal"},
 }
 
-# Towns and locations
 LOCATIONS = {
     "Greenwood Village": {
         "type": "town",
@@ -104,11 +105,15 @@ LOCATIONS = {
     "type": "dungeon",
     "monsters": ["Ash Revenant", "Cursed Wanderer"],
     "description": "The ruins of a once-great city buried in ash and echoing with whispers of the past"
-}
+},
+"Crimson Abyss": {
+    "type": "dangerous",
+    "monsters": ["Blood Demon", "Abyssal Leviathan"],
+    "description": "A dark and twisted realm where nightmares come to life, ruled by the Crimson Abyss"
+},
 
 }
 
-# Character classes
 CHARACTER_CLASSES = {
     "Warrior": {"health_bonus": 20, "attack_bonus": 10, "defense_bonus": 15},
     "Mage": {"health_bonus": -10, "attack_bonus": 25, "defense_bonus": 0},
@@ -126,7 +131,6 @@ CHARACTER_CLASSES = {
     "Tamer": {"health_bonus": 35, "attack_bonus": 50, "defense_bonus": -25},
 }
 
-# Item rarity
 RARITY_MULTIPLIERS = {
     "Common": 1.0,
     "Uncommon": 1.2,
@@ -135,7 +139,6 @@ RARITY_MULTIPLIERS = {
     "Legendary": 3.0
 }
 
-# Basic skills
 SKILLS = {
     "Warrior": ["Slam", "Shield Block", "Berserk"],
     "Mage": ["Fireball", "Ice Shield", "Lightning Bolt"],
@@ -154,7 +157,6 @@ SKILLS = {
 
 }
 
-# Enhanced crafting system
 CRAFTING_RECIPES = {
     "Iron Sword": {
         "materials": {"Iron Ingot": 2, "Wood": 1},
@@ -203,7 +205,7 @@ MATERIALS = {
 
 }
 
-# Sample quests
+
 QUESTS = [
     {
         "id": 1,
@@ -288,10 +290,17 @@ QUESTS = [
      "description": "Defeat 2 Water Elementals in Long Shui Zhen",
      "target": {"monster": "Water Elemental", "count": 2},
      "reward": {"gold": 110, "exp": 220}
-    }   
+    },
+    {
+        "id": 13,
+        "name": "Free the caliphate",
+        "description": "Kill the oprressive caliph",
+        "target": {"monster": "Az-Zālim al-Muqaddas,The Caliph of Al-Khilafah Al-Hadidiyah", "count": 1},
+        "reward": {"gold": 500, "exp": 1000}
+    }
 ]
 
-# Available professions with their bonuses
+
 PROFESSIONS = {
     "Miner": {"gather_bonus": ["Iron Ore", "Gold Ore"], "craft_bonus": ["weapons"]},
     "Herbalist": {"gather_bonus": ["Red Herb"], "craft_bonus": ["potions"]},
@@ -304,7 +313,7 @@ PROFESSIONS = {
     "Enchanter": {"gather_bonus": ["Magic Crystal"], "craft_bonus": ["enchanted items"]},
 }
 
-# Initialize user data with proper typing
+
 user_data: Dict = {
     "class": None,
     "profession": None,
@@ -326,11 +335,10 @@ user_data: Dict = {
     "active_quests": [],
     "completed_quests": [],
     "materials": {},
-    "tools": ["Axe", "Pickaxe", "Flask", "Hunting Knife"],  # Starting tools
+    "tools": ["Axe", "Pickaxe", "Flask", "Hunting Knife"],  
     "current_area": "Greenwood Village"
 }
 
-# Shop items
 shop_items = [
     # === Basic Equipment ===
     {"name": "Wooden Sword", "type": "weapon", "effect": 5, "price": 30},
@@ -341,7 +349,7 @@ shop_items = [
     {"name": "Steel Armor", "type": "armor", "effect": 15, "price": 180},
     {"name": "Bronze Dagger", "type": "weapon", "effect": 7, "price": 50},
     {"name": "Chainmail", "type": "armor", "effect": 8, "price": 75},
-    
+
     # === Consumables ===
     {"name": "Healing Potion", "type": "consumable", "effect": 30, "price": 20},
     {"name": "Greater Healing Potion", "type": "consumable", "effect": 60, "price": 50},
@@ -351,7 +359,7 @@ shop_items = [
     {"name": "Stamina Elixir", "type": "consumable", "effect": "restore_stamina", "price": 30},
     {"name": "Revival Herb", "type": "consumable", "effect": "revive", "price": 100},
     {"name": "Energy Drink", "type": "consumable", "effect": 25, "price": 15},
-    
+
     # === Special Equipment ===
     {"name": "Magic Staff", "type": "weapon", "effect": 12, "price": 200},
     {"name": "Shadow Cloak", "type": "armor", "effect": 8, "price": 90},
@@ -373,7 +381,7 @@ shop_items = [
     {"name": "Cloak of Invisibility", "type": "armor", "effect": 15, "price": 700, "special": "Temporary stealth on use"},
     {"name": "Mjolnir", "type": "weapon", "effect": 35, "price": 1000, "special": "Lightning strikes on critical hits"},
     {"name": "Aegis of the Gods", "type": "armor", "effect": 25, "price": 900, "special": "Blocks all critical hits"},
-    
+
     # === More Exotic Items from Monster Drops ===
     {"name": "Crimson Cutlass", "type": "weapon", "effect": 28, "price": 750, "special": "Bleeds enemies over time", "source": "Dreadlord Varkhull"},
     {"name": "Dragon Armor", "type": "armor", "effect": 22, "price": 850, "special": "Resistant to fire/ice/lightning", "source": "Dragon Knight"},
@@ -397,6 +405,7 @@ monsters: List[Dict] = [
     {"name": "Bandit", "level": 2, "health": 65, "attack": 14, "drops": ["Leather Armor", "Gold Coin"]},
     {"name": "Dire Wolf", "level": 2, "health": 70, "attack": 15, "drops": ["Wolf Fang", "Gold Coin"]},
     {"name": "Goblin Shaman", "level": 2, "health": 55, "attack": 13, "drops": ["Goblin Staff", "Gold Coin"]},
+    {"name": "Goblin King", "level": 3, "health": 80, "attack": 20, "drops": ["Goblin Crown", "Gold Coin"]},
 
     # Stormhaven Monsters (Level 2-3)
     {"name": "Skeleton", "level": 2, "health": 75, "attack": 15, "drops": ["Gold Coin", "Bone Armor"]},
@@ -498,10 +507,39 @@ monsters: List[Dict] = [
     {"name": "Corrupted Ninja", "level": 5, "health": 200, "attack": 30, "drops": ["Ninja Star", "Gold Coin"]},
     {"name": "Shadow Samurai", "level": 6, "health": 260, "attack": 42, "drops": ["Shadow Blade", "Gold Coin"]},
     {"name": "Possessed Katana", "level": 5, "health": 210, "attack": 36, "drops": ["Cursed Katana", "Gold Coin"]},
+
+    # The Iron Caliphate of Al-Khilafah Al-Hadidiyah Monsters (Level 7-12)
+    {"name": "Az-Zālim al-Muqaddas,The Caliph of Al-Khilafah Al-Hadidiyah", "level": 12, "health": 500, "attack": 80, "drops": ["Iron Caliph's Crown", "Gold Coin"]},
+    {"name": "Al-Hadidiyah Guardian", "level": 11, "health": 450, "attack": 75, "drops": ["Guardian's Blade", "Gold Coin"]},
+    {"name": "Al-Hadidiyah Knight", "level": 10, "health": 400, "attack": 70, "drops": ["Knight's Shield", "Gold Coin"]},
+    {"name": "Mercenary of the caliphate", "level": 9, "health": 350, "attack": 65, "drops": ["Mercenary's Dagger", "Gold Coin"]},
+    {"name": "Loyalist of the caliphate", "level": 8, "health": 300, "attack": 60, "drops": ["Loyalist's Blade", "Gold Coin"]},
+    {"name": "High Priest of the caliphate", "level": 7, "health": 250, "attack": 55, "drops": ["High Priest's Staff", "Gold Coin"]},
+    {"name": "Al-Hadidiyah Sorcerer", "level": 7, "health": 240, "attack": 50, "drops": ["Sorcerer's Tome", "Gold Coin"]},
+    {"name": "Steel Golem", "level": 8, "health": 280, "attack": 60, "drops": ["Steel Core", "Gold Coin"]},
+    {"name": "Royal Janissary", "level": 9, "health": 320, "attack": 65, "drops": ["Janissary's Blade", "Gold Coin"]},
+    {"name": "Iron Caliphate General", "level": 10, "health": 370, "attack": 70, "drops": ["General's Armor", "Gold Coin"]},
+
+    #  Tlācahcāyōtl Tletl Tecpanēcatl/Empire of the Sacred Fire and Chains Monsters (Level 7-12)
+    {"name": "Tēcpatl Tlamacazqui,The Emperor of the Sacred Fire and Chains", "level": 12, "health": 550, "attack": 85, "drops": ["Emperor's Crown", "Gold Coin"]},
+    {"name": "Secret Police from The Order of the Black Sun (Yohualli Tōnatiuh)", "level": 10, "health": 400, "attack": 70, "drops": ["Black Sun Dagger", "Gold Coin"]},
+    {"name": "Tlācahcāyōtl Tletl Tecpanēcatl Knight", "level": 11, "health": 450, "attack": 75, "drops": ["Knight's Shield", "Gold Coin"]},
+    {"name": "Tlācahcāyōtl Tletl Tecpanēcatl Guardian", "level": 9, "health": 350, "attack": 65, "drops": ["Guardian's Blade", "Gold Coin"]},
+    {"name": "Tlācahcāyōtl Tletl Tecpanēcatl Sorcerer", "level": 8, "health": 300, "attack": 60, "drops": ["Sorcerer's Tome", "Gold Coin"]},
+    {"name": "Tlācahcāyōtl Tletl Tecpanēcatl High Priest", "level": 7, "health": 250, "attack": 55, "drops": ["High Priest's Staff", "Gold Coin"]},
+    {"name": "Tlācahcāyōtl Tletl Tecpanēcatl Mercenary", "level": 9, "health": 320, "attack": 65, "drops": ["Mercenary's Dagger", "Gold Coin"]},
+    {"name": "Tlācahcāyōtl Tletl Tecpanēcatl Loyalist", "level": 8, "health": 280, "attack": 60, "drops": ["Loyalist's Blade", "Gold Coin"]},
+    {"name": "Tlācahcāyōtl Tletl Tecpanēcatl Royal Guard", "level": 10, "health": 370, "attack": 70, "drops": ["Royal Guard's Sword", "Gold Coin"]},
+
+    # Crimson Abyss Monsters (Level 9-16)
+    {"name": "Crimson Abyss Demon", "level": 15, "health": 600, "attack": 100, "drops": ["Demon's Heart", "Gold Coin"]},
+    {"name": "Crimson Abyss Knight", "level": 14, "health": 550, "attack": 90, "drops": ["Knight's Blade", "Gold Coin"]},
+    {"name": "Crimson Abyss Sorcerer", "level": 13, "health": 500, "attack": 80, "drops": ["Sorcerer's Staff", "Gold Coin"]},
+    {"name": "Crimson Abyss Guardian", "level": 12, "health": 450, "attack": 75, "drops": ["Guardian's Shield", "Gold Coin"]},
+    {"name": "Abyssal Leviathan", "level": 16, "health": 700, "attack": 120, "drops": ["Leviathan Scale", "Gold Coin"]},
+
 ]
 
-
-# Dungeons with monsters and loot
 dungeons: List[Dict] = [
     # Greenwood Village Dungeons
     {"name": "Goblin's Hideout", "monsters": ["Goblin", "Wolf"], "loot": ["Wooden Sword", "Wolf Pelt", "Gold Coin"]},
@@ -510,7 +548,8 @@ dungeons: List[Dict] = [
     {"name": "Ancient Ruins", "monsters": ["Forest Spider", "Goblin"], "loot": ["Ancient Relic", "Gold Coin"]},
     {"name": "Goblin Fortress", "monsters": ["Goblin", "Dire Wolf"], "loot": ["Goblin Staff", "Gold Coin"]},
     {"name": "Cave of Shadows", "monsters": ["Goblin Shaman"], "loot": ["Gold Coin", "Goblin Staff"]},
-    
+    {"name": "Goblin King's castle", "monsters": ["Goblin King"], "loot": ["Goblin King's Crown", "Gold Coin"]},
+
     # Stormhaven Dungeons
     {"name": "Haunted Crypt", "monsters": ["Skeleton", "Ghost"], "loot": ["Bone Armor", "Spirit Essence", "Gold Coin"]},
     {"name": "Pirate's Cove", "monsters": ["Pirate Scout"], "loot": ["Cutlass", "Gold Coin"]},
@@ -520,7 +559,7 @@ dungeons: List[Dict] = [
     {"name": "Dreadlord's Sunken Ship", "monsters": ["Dreadlord Varkhull, the Crimson Abyss Pirate Captain"], "loot": ["Crimson Cutlass", "Gold Coin"]},
     {"name": "Cursed Lighthouse", "monsters": ["Haunted Armor", "Ghost"], "loot": ["Cursed Shield", "Gold Coin"]},
     {"name": "Cursed Graveyard", "monsters": ["Skeleton", "Ghost"], "loot": ["Bone Armor", "Spirit Essence", "Gold Coin"]},
-    
+
     # Dragon's Peak Dungeons
     {"name": "Fire Dragon's Lair", "monsters": ["Fire Dragon"], "loot": ["Dragon Scale", "Flame Sword", "Gold Coin"]},
     {"name": "Ice Dragon's Nest", "monsters": ["Ice Dragon"], "loot": ["Dragon Scale", "Ice Sword", "Gold Coin"]},
@@ -535,7 +574,7 @@ dungeons: List[Dict] = [
     {"name": "Earth Wyvern Den", "monsters": ["Earth Wyvern"], "loot": ["Wyvern Scale", "Gold Coin"]},
     {"name": "Dragon Knight's Fortress", "monsters": ["Dragon Knight"], "loot": ["Dragon Armor", "Gold Coin"]},
     {"name": "Water Wyvern Lagoon", "monsters": ["Water Wyvern"], "loot": ["Wyvern Wing", "Gold Coin"]},
-    
+
     # Crystal Cave Dungeons
     {"name": "Crystal Depths", "monsters": ["Crystal Golem", "Cave Troll"], "loot": ["Crystal Shard", "Troll Hide", "Gold Coin"]},
     {"name": "Cave of Echoes", "monsters": ["Crystal Spider", "Rock Elemental"], "loot": ["Crystal Web", "Earth Stone", "Gold Coin"]},
@@ -544,7 +583,7 @@ dungeons: List[Dict] = [
     {"name": "Serpent's Lair", "monsters": ["Crystal Serpent"], "loot": ["Serpent Scale", "Gold Coin"]},
     {"name": "Corrupted Miner's Hideout", "monsters": ["Corrupted Miner"], "loot": ["Miner's Pickaxe", "Gold Coin"]},
     {"name": "Crystal Cavern", "monsters": ["Crystal Golem", "Cave Troll"], "loot": ["Crystal Shard", "Troll Hide", "Gold Coin"]},
-    
+
     # Shadowmere Dungeons
     {"name": "Shadow Keep", "monsters": ["Shadow Beast", "Dark Knight"], "loot": ["Shadow Essence", "Dark Armor", "Gold Coin"]},
     {"name": "Wraith's Lair", "monsters": ["Wraith"], "loot": ["Soul Gem", "Gold Coin"]},
@@ -554,7 +593,7 @@ dungeons: List[Dict] = [
     {"name": "Vampire's Crypt", "monsters": ["Vampire"], "loot": ["Vampire Fang", "Gold Coin"]},
     {"name": "Undead Fortress", "monsters": ["Undead Knight"], "loot": ["Undead Blade", "Gold Coin"]},
     {"name": "Undead Army Base", "monsters": ["Undead Army General","Undead Army Commander"], "loot": ["Undead Armor", "Gold Coin"]},
-    
+
     # Frostvale Dungeons
     {"name": "Frozen Halls", "monsters": ["Ice Troll", "Frost Giant"], "loot": ["Frozen Heart", "Giant's Club", "Gold Coin"]},
     {"name": "Snowy Cavern", "monsters": ["Snow Wolf", "Ice Elemental"], "loot": ["Frost Pelt", "Ice Crystal", "Gold Coin"]},
@@ -606,18 +645,42 @@ dungeons: List[Dict] = [
     {"name": "Corrupted Ninja's Hideout", "monsters": ["Corrupted Ninja"], "loot": ["Ninja Star", "Gold Coin"]},
     {"name": "Shadow Samurai's Fortress", "monsters": ["Shadow Samurai"], "loot": ["Shadow Blade", "Gold Coin"]},
     {"name": "Possessed Katana's Lair", "monsters": ["Possessed Katana"], "loot": ["Cursed Katana", "Gold Coin"]},
+
+    # The Iron Caliphate of Al-Khilafah Al-Hadidiyah Dungeons
+    {"name": "Caliph's Palace", "monsters": ["Az-Zālim al-Muqaddas,The Caliph of Al-Khilafah Al-Hadidiyah"], "loot": ["Iron Caliph's Crown", "Gold Coin"]},
+    {"name": "Guardian's Keep", "monsters": ["Al-Hadidiyah Guardian"], "loot": ["Guardian's Blade", "Gold Coin"]},
+    {"name": "Knight's Barracks", "monsters": ["Al-Hadidiyah Knight"], "loot": ["Knight's Shield", "Gold Coin"]},
+    {"name": "Mercenary Camp", "monsters": ["Mercenary of the caliphate"], "loot": ["Mercenary's Dagger", "Gold Coin"]},
+    {"name": "Loyalist's mosque", "monsters": ["Loyalist of the caliphate", "High Priest of the caliphate"], "loot": ["Loyalist's Blade", "High Priest's Staff", "Gold Coin"]},
+    {"name": "Sorcerer's Tower", "monsters": ["Al-Hadidiyah Sorcerer"], "loot": ["Sorcerer's Tome", "Gold Coin"]},
+    {"name": "factory of golems", "monsters": ["Steel Golem"], "loot": ["Steel Core", "Gold Coin"]},
+    {"name": "Janissary Barracks", "monsters": ["Royal Janissary"], "loot": ["Janissary's Blade", "Gold Coin"]},
+    {"name": "General's Fortress", "monsters": ["Iron Caliphate General", "Al-Hadidiyah Knight","Mercenary of the caliphate"], "loot": ["General's Armor", "Gold Coin"]},
+
+    # Tlācahcāyōtl Tletl Tecpanēcatl/Empire of the Sacred Fire and Chains Dungeons
+    {"name": "Tlācahcāyōtl Tletl Tecpanēcatl Palace", "monsters": ["Tēcpatl Tlamacazqui,The Emperor of the Sacred Fire and Chains", "Secret Police from The Order of the Black Sun (Yohualli Tōnatiuh)","Tlācahcāyōtl Tletl Tecpanēcatl Knight"], "loot": ["Emperor's Crown", "Black Sun Dagger", "Knight's Shield", "Gold Coin"]},
+    {"name": "Tlācahcāyōtl Tletl Tecpanēcatl Guardian's Keep", "monsters": ["Tlācahcāyōtl Tletl Tecpanēcatl Guardian"], "loot": ["Guardian's Blade", "Gold Coin"]},
+    {"name": "Tlācahcāyōtl Tletl Tecpanēcatl Sorcerer's Tower", "monsters": ["Tlācahcāyōtl Tletl Tecpanēcatl Sorcerer"], "loot": ["Sorcerer's Tome", "Gold Coin"]},
+    {"name": "Tlācahcāyōtl Tletl Tecpanēcatl High Priest's Sanctuary", "monsters": ["Tlācahcāyōtl Tletl Tecpanēcatl High Priest"], "loot": ["High Priest's Staff", "Gold Coin"]},
+    {"name": "Tlācahcāyōtl Tletl Tecpanēcatl Mercenary Camp", "monsters": ["Tlācahcāyōtl Tletl Tecpanēcatl Mercenary"], "loot": ["Mercenary's Dagger", "Gold Coin"]},
+    {"name": "Tlācahcāyōtl Tletl Tecpanēcatl Loyalist Town", "monsters": ["Tlācahcāyōtl Tletl Tecpanēcatl Loyalist"], "loot": ["Loyalist's Blade", "Gold Coin"]},
+    {"name": "Tlācahcāyōtl Tletl Tecpanēcatl Royal Guard's Fortress", "monsters": ["Tlācahcāyōtl Tletl Tecpanēcatl Royal Guard"], "loot": ["Royal Guard's Sword", "Gold Coin"]},
+    
+    # Crimson Abyss Dungeons
+    {"name": "Crimson Abyss Fortress", "monsters": ["Crimson Abyss Demon", "Crimson Abyss Knight"], "loot": ["Demon's Heart", "Knight's Blade", "Gold Coin"]},
+    {"name": "Crimson Abyss Sorcerer's Tower", "monsters": ["Crimson Abyss Sorcerer"], "loot": ["Sorcerer's Staff", "Gold Coin"]},
+    {"name": "Crimson Abyss Guardian's Keep", "monsters": ["Crimson Abyss Guardian"], "loot": ["Guardian's Shield", "Gold Coin"]},
+    {"name": "Abyssal Leviathan's Sunken Palace", "monsters": ["Abyssal Leviathan"], "loot": ["Leviathan Scale", "Gold Coin"]},
 ]
 
-# Function to display headers
 def print_header(title: str) -> None:
     print("\n" + "=" * 40)
     print(f"{title}")
     print("=" * 40)
 
-# Show the help menu
 def show_help() -> None:
     print("""
-TEXTRP CLI - COMMANDS
+EPIC RPG CLI - COMMANDS
 
 PROGRESS
 /start            - Starter guide
@@ -685,7 +748,6 @@ SETTINGS
 /travel            - Travel to area
 """)
 
-# Function to handle commands
 def handle_command(cmd: str) -> None:
     commands = {
         "/start": start_guide,
@@ -703,8 +765,10 @@ def handle_command(cmd: str) -> None:
         "/materials": print_materials,
         "/travel": travel_to_area,
         "/new": create_character,
-        "/save": save_game,
-        "/load": load_game,
+        "/save": lambda: save_prompt(),
+        "/load": lambda: load_prompt(),
+        "/saves": show_save_slots,
+        "/delete_save": lambda: delete_save_prompt(),
         "/exit": exit_game,
         "/guild": guild_guide,
         "/areas": area_guides,
@@ -734,7 +798,6 @@ def handle_command(cmd: str) -> None:
         "/prefix": command_prefix
     }
 
-    # Handle commands with arguments
     if cmd.startswith("/fight "):
         fight_monster(cmd.split(" ", 1)[1])
     elif cmd.startswith("/equip "):
@@ -746,7 +809,6 @@ def handle_command(cmd: str) -> None:
     else:
         print("Unknown command. Type '/help' for a list of commands.")
 
-# Define functions
 def start_guide() -> None:
     print_header("Starter Guide")
     print("Welcome to TextRP CLI! Type /help for help!")
@@ -838,7 +900,6 @@ def show_mobs(area: str = None) -> None:
         else:
             print("No monsters in current area")
 
-# Function to handle a fight with a monster
 def fight(monster: Dict) -> None:
     global user_data
     monster_health = monster["health"]
@@ -856,7 +917,7 @@ def fight(monster: Dict) -> None:
         action = input("Choose an action: ")
 
         if action == "1":
-            # Normal attack with critical chance
+            
             damage = random.randint(5, 15) + (user_data["equipped"]["weapon"]["effect"] if user_data["equipped"]["weapon"] else 0)
             if random.random() < CRITICAL_CHANCE:
                 damage *= 2
@@ -873,7 +934,7 @@ def fight(monster: Dict) -> None:
                     skill_choice = int(input("Choose skill (0 to cancel): "))
                     if 0 < skill_choice <= len(user_data["skills"]):
                         skill = user_data["skills"][skill_choice - 1]
-                        damage = random.randint(15, 25)  # Skills do more damage
+                        damage = random.randint(15, 25) 
                         monster_health -= damage
                         print(f"You used {skill} and dealt {damage} damage!")
                 except ValueError:
@@ -893,7 +954,7 @@ def fight(monster: Dict) -> None:
                 continue
 
         elif action == "4":
-            if random.random() < 0.7:  # 70% chance to flee
+            if random.random() < 0.75: 
                 print("You successfully fled the battle!")
                 return
             print("Failed to flee!")
@@ -904,7 +965,7 @@ def fight(monster: Dict) -> None:
 
         # Monster's turn
         if monster_health > 0:
-            if random.random() > DODGE_CHANCE:  # Dodge chance
+            if random.random() > DODGE_CHANCE:  
                 monster_damage = max(1, random.randint(5, monster["attack"]) - (user_data["equipped"]["armor"]["effect"] if user_data["equipped"]["armor"] else 0))
                 user_data["health"] -= monster_damage
                 print(f"{monster['name']} attacks! You take {monster_damage} damage.")
@@ -917,10 +978,8 @@ def fight(monster: Dict) -> None:
         user_data["exp"] += exp_gain
         print(f"You gained {exp_gain} experience!")
 
-        # Level up check
         check_level_up()
 
-        # Quest progress
         update_quest_progress(monster["name"])
 
         loot(monster)
@@ -949,21 +1008,72 @@ def complete_quest(quest: Dict) -> None:
     user_data["completed_quests"].append(quest["id"])
     print(f"Rewards: {quest['reward']['gold']} gold, {quest['reward']['exp']} exp")
 
-def save_game() -> None:
-    with open("savegame.json", "w") as f:
-        json.dump(user_data, f)
-    print("Game saved successfully!")
+def get_save_slots() -> List[str]:
+    saves = [f for f in os.listdir() if f.startswith("save_") and f.endswith(".json")]
+    return sorted(saves)
 
-def load_game() -> bool:
+def save_game(slot: int = 1, auto: bool = False) -> None:
+    save_data = {
+        "user_data": user_data,
+        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "version": "1.0"
+    }
+    
+    filename = f"save_{slot}.json"
     try:
-        with open("savegame.json", "r", encoding='utf-8') as f:
+        with open(filename, "w") as f:
+            json.dump(save_data, f, indent=2)
+        if not auto:
+            print(f"Game saved successfully in slot {slot}!")
+    except Exception as e:
+        print(f"Error saving game: {e}")
+
+def load_game(slot: int = 1) -> bool:
+    filename = f"save_{slot}.json"
+    try:
+        with open(filename, "r", encoding='utf-8') as f:
+            save_data = json.load(f)
             global user_data
-            user_data = json.load(f)
-        print("Game loaded successfully!")
-        return True
+            user_data = save_data["user_data"]
+            print(f"Game loaded successfully from slot {slot}!")
+            print(f"Save timestamp: {save_data['timestamp']}")
+            return True
     except FileNotFoundError:
-        print("No saved game found.")
+        print(f"No saved game found in slot {slot}.")
         return False
+    except Exception as e:
+        print(f"Error loading game: {e}")
+        return False
+
+def auto_save() -> None:
+    save_game(slot=0, auto=True)
+
+def show_save_slots() -> None:
+    print_header("Save Slots")
+    saves = get_save_slots()
+    if not saves:
+        print("No saved games found.")
+        return
+        
+    for save in saves:
+        try:
+            with open(save, "r") as f:
+                data = json.load(f)
+                slot = save.split("_")[1].split(".")[0]
+                print(f"\nSlot {slot}:")
+                print(f"Character: Level {data['user_data']['level']} {data['user_data']['class']}")
+                print(f"Location: {data['user_data']['current_area']}")
+                print(f"Saved: {data['timestamp']}")
+        except Exception:
+            continue
+
+def delete_save(slot: int) -> None:
+    filename = f"save_{slot}.json"
+    try:
+        os.remove(filename)
+        print(f"Save in slot {slot} deleted.")
+    except FileNotFoundError:
+        print(f"No save found in slot {slot}.")
 
 def show_quests() -> None:
     print_header("Available Quests")
@@ -977,7 +1087,6 @@ def show_quests() -> None:
                 print("Quest accepted!")
 
 
-# Function to handle loot drops
 def loot(monster: Dict) -> None:
     global user_data
     drops = monster["drops"]
@@ -1001,7 +1110,6 @@ def loot(monster: Dict) -> None:
     except ValueError:
         print("Invalid input, no loot taken.")
 
-# Function to enter a dungeon
 def enter_dungeon(dungeon_name: str) -> None:
     global user_data
     dungeon = next((d for d in dungeons if d["name"].lower() == dungeon_name.lower()), None)
@@ -1018,7 +1126,6 @@ def enter_dungeon(dungeon_name: str) -> None:
     else:
         print(f"{dungeon_name} not found.")
 
-# Shop functions
 def visit_shop() -> None:
     print_header("Shop")
     print("Welcome to the shop! What would you like to buy?")
@@ -1051,7 +1158,6 @@ def equip_item(item_name: str) -> None:
         item_type = None
         effect = 0
 
-        # Determine item type and effect
         if item in ["Wooden Sword", "Iron Sword", "Flame Sword", "Ice Sword", "Steel Sword"]:
             item_type = "weapon"
             effect = 5 if item == "Wooden Sword" else 10 if item == "Iron Sword" else 15 if item == "Steel Sword" else 15
@@ -1078,7 +1184,6 @@ def show_stats() -> None:
     print(f"Equipped Weapon: {user_data['equipped']['weapon']['name'] if user_data['equipped']['weapon'] else 'None'}")
     print(f"Equipped Armor: {user_data['equipped']['armor']['name'] if user_data['equipped']['armor'] else 'None'}")
 
-# New functions for additional commands
 def list_dungeons() -> None:
     print_header("Dungeon List")
     for dungeon in dungeons:
@@ -1095,7 +1200,6 @@ def show_support() -> None:
     print("Wiki: https://example.com/wiki")
     print("Discord: https://discord.gg/example")
 
-# Function stubs for other commands
 def farming_guide() -> None:
     print_header("Farming Guide")
     print("Farming allows you to gather resources and grow crops for crafting and trading.")
@@ -1162,7 +1266,7 @@ def create_character() -> None:
     if user_data["class"] is not None:
         print("You have already created a character!")
         return
-        
+
     print_header("Character Creation")
     print("Choose your class:")
     for class_name in CHARACTER_CLASSES:
@@ -1184,7 +1288,6 @@ def create_character() -> None:
             break
         print("Invalid class. Try again.")
 
-# Sample villages (added for completeness)
 villages = [
     {"name": "Greenwood", "population": 150, "special_items": ["Herbal Potion", "Wooden Bow"]},
     {"name": "Stonehaven", "population": 200, "special_items": ["Iron Sword", "Shield"]},
@@ -1197,7 +1300,6 @@ villages = [
     {"name": "Long Shui Zhen", "population": 140, "special_items": ["Dragon Scale", "Water Orb"]},
 ]
 
-# Sample biomes (added for completeness)
 biomes = [
 {
    "name":"Forest",
@@ -1351,12 +1453,10 @@ biomes = [
 
 ]
 
-# Horse festival function (added for completeness)
 def horse_festival() -> None:
     print_header("Horse Festival")
     print("The annual Horse Festival is a grand event with exciting races and prizes.")
 
-# New function for gathering materials
 def gather_materials(area: str) -> None:
     if area not in [mat["areas"] for mat in MATERIALS.values()]:
         print(f"No materials can be gathered in {area}")
@@ -1417,7 +1517,6 @@ def craft_item() -> None:
             recipe_name = available_recipes[choice - 1]
             recipe = CRAFTING_RECIPES[recipe_name]
 
-            # Check materials
             can_craft = True
             for material, amount in recipe["materials"].items():
                 if user_data["materials"].get(material, 0) < amount:
@@ -1425,11 +1524,9 @@ def craft_item() -> None:
                     can_craft = False
 
             if can_craft:
-                # Consume materials
                 for material, amount in recipe["materials"].items():
                     user_data["materials"][material] -= amount
 
-                # Add item to inventory
                 user_data["inventory"].append(recipe_name)
                 print(f"Successfully crafted {recipe_name}!")
         else:
@@ -1494,7 +1591,6 @@ def fight_monster(monster_name: str) -> None:
             choice = input("Choose action (1-3): ").strip()
 
             if choice == "1":
-                # Calculate damage with equipped weapon
                 base_damage = user_data["attack"]
                 weapon_bonus = user_data["equipped"]["weapon"]["effect"] if user_data["equipped"]["weapon"] else 0
                 damage = base_damage + weapon_bonus
@@ -1526,7 +1622,6 @@ def fight_monster(monster_name: str) -> None:
                 print("Invalid choice!")
                 continue
 
-            # Monster attacks if still alive
             if monster_health > 0:
                 defense_bonus = user_data["equipped"]["armor"]["effect"] if user_data["equipped"]["armor"] else 0
                 damage_taken = max(1, monster["attack"] - defense_bonus)
@@ -1546,10 +1641,8 @@ def fight_monster(monster_name: str) -> None:
         user_data["exp"] += exp_gain
         print(f"Gained {exp_gain} experience!")
 
-        # Handle loot
         loot(monster)
 
-        # Check for level up
         check_level_up()
     else:
         print("You were defeated!")
@@ -1570,10 +1663,41 @@ def check_level_up() -> None:
 def show_weapon_info() -> None:
     print_header("Weapon Information")
 
+def save_prompt() -> None:
+    print_header("Save Game")
+    show_save_slots()
+    try:
+        slot = int(input("\nEnter save slot number (1-5): "))
+        if 1 <= slot <= 5:
+            save_game(slot)
+        else:
+            print("Invalid slot number. Choose between 1 and 5.")
+    except ValueError:
+        print("Invalid input. Please enter a number.")
+
+def load_prompt() -> None:
+    print_header("Load Game")
+    show_save_slots()
+    try:
+        slot = int(input("\nEnter save slot number to load: "))
+        load_game(slot)
+    except ValueError:
+        print("Invalid input. Please enter a number.")
+
+def delete_save_prompt() -> None:
+    print_header("Delete Save")
+    show_save_slots()
+    try:
+        slot = int(input("\nEnter save slot number to delete: "))
+        if input(f"Are you sure you want to delete save slot {slot}? (y/n): ").lower() == 'y':
+            delete_save(slot)
+    except ValueError:
+        print("Invalid input. Please enter a number.")
+
 def check_location() -> None:
     print_header("Location Information")
     current = user_data["current_area"]
-    
+
     print("Current Location:", current)
     if current in LOCATIONS:
         loc_info = LOCATIONS[current]
@@ -1583,13 +1707,13 @@ def check_location() -> None:
             print(f"Available Shops: {', '.join(loc_info['shops'])}")
         if 'monsters' in loc_info:
             print(f"Local Monsters: {', '.join(loc_info['monsters'])}")
-    
+
     print("\nAll Available Locations:")
     for name, info in LOCATIONS.items():
         print(f"\n{name}:")
         print(f"  Type: {info['type']}")
         print(f"  Description: {info['description']}")
-    
+
     print("\nAvailable Dungeons:")
     for dungeon in dungeons:
         print(f"\n{dungeon['name']}:")
@@ -1599,7 +1723,7 @@ def check_location() -> None:
 def search_resources() -> None:
     print_header("Resource Search")
     search_type = random.choice(["monster", "material"])
-    
+
     if search_type == "monster":
         area_monsters = [m for m in monsters if m["name"] in LOCATIONS.get(user_data["current_area"], {}).get("monsters", [])]
         if area_monsters:
@@ -1632,16 +1756,36 @@ def show_pets() -> None:
     if not user_data["pets"]:
         print("You don't have any pets yet!")
         print("\nAvailable pets to adopt:")
-        available_pets = ["Cat", "Dog", "Dragon Hatchling", "Phoenix Chick"]
-        for i, pet in enumerate(available_pets, 1):
-            print(f"{i}. {pet}")
+        for pet_name, pet_data in PETS.items():
+            print(f"- {pet_name} ({pet_data['price']} gold) - {pet_data['description']}")
 
         try:
-            choice = input("\nChoose a pet to adopt (0 to cancel): ")
-            if choice.isdigit() and 1 <= int(choice) <= len(available_pets):
-                pet = available_pets[int(choice) - 1]
-                user_data["pets"].append(pet)
-                print(f"\nYou adopted a {pet}!")
+            choice = input("\nChoose a pet to adopt (pet name or 0 to cancel): ")
+            if choice == "0":
+                return
+            if choice in PETS:
+                pet_name = choice
+                pet_data = PETS[pet_name]
+                if user_data["gold"] >= pet_data["price"]:
+                    user_data["gold"] -= pet_data["price"]
+                    user_data["pets"].append(pet_name)
+                    print(f"\nYou adopted a {pet_name}!")
+                    for stat, boost in pet_data["boost"].items():
+                        if stat == "attack":
+                            user_data["attack"] += boost
+                        elif stat == "defense":
+                            user_data["defense"] += boost
+                        elif stat == "health":
+                            user_data["max_health"] += boost
+                            user_data["health"] = user_data["max_health"]
+                        elif stat == "exp_gain":
+                            pass
+                        elif stat == "gold_find":
+                            pass
+                else:
+                    print("You don't have enough gold.")
+            else:
+                print("Invalid pet choice.")
         except ValueError:
             print("Invalid choice")
     else:
@@ -1651,7 +1795,7 @@ def show_pets() -> None:
 
 def show_professions() -> None:
     print_header("Professions")
-    
+
     if user_data["has_chosen_profession"]:
         print(f"Your current profession: {user_data['profession']}")
         if user_data["profession"] in PROFESSIONS:
@@ -1660,13 +1804,13 @@ def show_professions() -> None:
             print(f"Gathering bonus for: {', '.join(bonuses['gather_bonus'])}")
             print(f"Crafting bonus for: {', '.join(bonuses['craft_bonus'])}")
         return
-        
+
     print("Available professions:")
     for prof, bonuses in PROFESSIONS.items():
         print(f"\n{prof}:")
         print(f"  Gathering bonus: {', '.join(bonuses['gather_bonus'])}")
         print(f"  Crafting bonus: {', '.join(bonuses['craft_bonus'])}")
-    
+
     choice = input("\nChoose a profession (or press Enter to skip): ").capitalize()
     if choice in PROFESSIONS:
         user_data["profession"] = choice
@@ -1682,16 +1826,46 @@ def show_professions() -> None:
         if 'effect' in stats:
             print(f"  Special Effect: {stats['effect']}")
 
-# Main loop
+
 if __name__ == "__main__":
     print("Welcome to Enhanced TextRP CLI!")
     print("Type '/help' for commands or '/new' to create a character.")
 
+    AUTO_SAVE_INTERVAL = 300  
+    last_save = time.time()
+
     while True:
         try:
+            # Auto-save
+            if time.time() - last_save > AUTO_SAVE_INTERVAL:
+                auto_save()
+                last_save = time.time()
+
             command = input("\n>> ").strip().lower()
             handle_command(command)
+            
+            # Auto-save 
+            if command in ["/fight", "/dungeon", "/equip", "/travel"]:
+                auto_save()
+                last_save = time.time()
         except Exception as e:
             print(f"Error: {e}")
             print("Type '/help' for available commands.")
 
+PETS = {
+    "Cat": {"price": 50, "boost": {"attack": 2}, "description": "A stealthy companion that boosts attack"},
+    "Dog": {"price": 50, "boost": {"defense": 2}, "description": "A loyal friend that boosts defense"},
+    "Dragon Hatchling": {"price": 200, "boost": {"attack": 5, "health": 10}, "description": "A baby dragon that boosts attack and health"},
+    "Phoenix Chick": {"price": 200, "boost": {"health": 15}, "description": "A magical bird that boosts health"},
+    "Battle Wolf": {"price": 150, "boost": {"attack": 4}, "description": "A fierce wolf that boosts attack"},
+    "Guardian Bear": {"price": 150, "boost": {"defense": 4}, "description": "A strong bear that boosts defense"},
+    "Spirit Fox": {"price": 175, "boost": {"exp_gain": 10}, "description": "A mystical fox that boosts experience gain"},
+    "Lucky Rabbit": {"price": 100, "boost": {"gold_find": 10}, "description": "A lucky companion that helps find more gold"},
+    "Mystic Owl": {"price": 125, "boost": {"intelligence": 5}, "description": "An intelligent owl that boosts intelligence"},
+    "Shadow Panther": {"price": 175, "boost": {"stealth": 5}, "description": "A stealthy panther that boosts stealth"},
+    "Thunder Eagle": {"price": 200, "boost": {"speed": 5}, "description": "A fast eagle that boosts speed"},
+    "Earth Golem": {"price": 250, "boost": {"defense": 10}, "description": "A sturdy golem that boosts defense"},
+    "Fire Salamander": {"price": 250, "boost": {"attack": 10}, "description": "A fiery creature that boosts attack"},
+    "Baby Wyvern": {"price": 300, "boost": {"attack": 15, "health": 20}, "description": "A young wyvern that boosts attack and health"},
+    "Ice Sprite": {"price": 300, "boost": {"defense": 15}, "description": "A magical sprite that boosts defense"},
+}
