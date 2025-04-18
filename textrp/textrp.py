@@ -6,12 +6,14 @@ import time
 from typing import List, Dict, Optional
 from datetime import datetime
 
+# Constants
 INITIAL_GOLD = 100
 INITIAL_HEALTH = 100
 EXP_TO_LEVEL = 100
 CRITICAL_CHANCE = 0.15
 DODGE_CHANCE = 0.1
 
+# Weapon types and their properties
 WEAPONS = {
     "Wooden Sword": {"damage": 5, "speed": 1.0, "price": 30},
     "Bone Sword": {"damage": 7, "speed": 1.0, "price": 50},
@@ -28,10 +30,9 @@ WEAPONS = {
     "Crossbow": {"damage": 15, "speed": 0.6, "price": 200},
     "Katana": {"damage": 22, "speed": 1.0, "price": 350},
     "Elder Wand": {"damage": 30, "speed": 1.0, "price": 500, "effect": "ultimate"},
-    "Mjolnir": {"damage": 35, "speed": 0.9, "price": 600, "effect": "lightning"},
-    "Vorpal Blade": {"damage": 25, "speed": 1.0, "price": 700, "effect": "vorpal"},
 }
 
+# Towns and locations
 LOCATIONS = {
     "Greenwood Village": {
         "type": "town",
@@ -74,46 +75,41 @@ LOCATIONS = {
         "description": "A bustling city with a rich history of dragon taming"
     },
     "Jade Lotus Village": {
-    "type": "town",
-    "shops": ["Herbalist", "Tea House", "Charm Shop"],
-    "monsters": ["Lotus Spirit", "Pond Serpent"],
-    "description": "A tranquil village known for its serene gardens and sacred lotus ponds"
-},
-"Thundercliff Hold": {
-    "type": "dangerous",
-    "monsters": ["Storm Elemental", "Rock Wyvern"],
-    "description": "A high cliff fortress battered by storms and haunted by sky beasts"
-},
-"Ember Hollow": {
-    "type": "dungeon",
-    "monsters": ["Lava Hound", "Molten Wraith"],
-    "description": "A volcanic cavern where fire magic pulses through the earth"
-},
-"Moonveil Harbor": {
-    "type": "town",
-    "shops": ["Navigator's Guild", "Seafood Market", "Lunar Shrine"],
-    "monsters": ["Moonshade Specter", "Sea Serpent"],
-    "description": "A mystical harbor town bathed in moonlight and tied to ancient sea legends"
-},
-"Verdant Spire": {
-    "type": "city",
-    "shops": ["Elven Boutique", "Sky Garden", "Mystic Archives"],
-    "monsters": ["Treant", "Forest Guardian"],
-    "description": "A soaring city built into a sacred tree, home to ancient knowledge and nature spirits"
-},
-"Silent Ashes": {
-    "type": "dungeon",
-    "monsters": ["Ash Revenant", "Cursed Wanderer"],
-    "description": "The ruins of a once-great city buried in ash and echoing with whispers of the past"
-},
-"Crimson Abyss": {
-    "type": "dangerous",
-    "monsters": ["Blood Demon", "Abyssal Leviathan"],
-    "description": "A dark and twisted realm where nightmares come to life, ruled by the Crimson Abyss"
-},
-
+        "type": "town",
+        "shops": ["Herbalist", "Tea House", "Charm Shop"],
+        "monsters": ["Lotus Spirit", "Pond Serpent"],
+        "description": "A tranquil village known for its serene gardens and sacred lotus ponds"
+    },
+    "Thundercliff Hold": {
+        "type": "dangerous",
+        "monsters": ["Storm Elemental", "Rock Wyvern"],
+        "description": "A high cliff fortress battered by storms and haunted by sky beasts"
+    },
+    "Ember Hollow": {
+        "type": "dungeon",
+        "monsters": ["Lava Hound", "Molten Wraith"],
+        "description": "A volcanic cavern where fire magic pulses through the earth"
+    },
+    "Moonveil Harbor": {
+        "type": "town",
+        "shops": ["Navigator's Guild", "Seafood Market", "Lunar Shrine"],
+        "monsters": ["Moonshade Specter", "Sea Serpent"],
+        "description": "A mystical harbor town bathed in moonlight and tied to ancient sea legends"
+    },
+    "Verdant Spire": {
+        "type": "city",
+        "shops": ["Elven Boutique", "Sky Garden", "Mystic Archives"],
+        "monsters": ["Treant", "Forest Guardian"],
+        "description": "A soaring city built into a sacred tree, home to ancient knowledge and nature spirits"
+    },
+    "Silent Ashes": {
+        "type": "dungeon",
+        "monsters": ["Ash Revenant", "Cursed Wanderer"],
+        "description": "The ruins of a once-great city buried in ash and echoing with whispers of the past"
+    }
 }
 
+# Character classes
 CHARACTER_CLASSES = {
     "Warrior": {"health_bonus": 20, "attack_bonus": 10, "defense_bonus": 15},
     "Mage": {"health_bonus": -10, "attack_bonus": 25, "defense_bonus": 0},
@@ -131,6 +127,7 @@ CHARACTER_CLASSES = {
     "Tamer": {"health_bonus": 35, "attack_bonus": 50, "defense_bonus": -25},
 }
 
+# Item rarity
 RARITY_MULTIPLIERS = {
     "Common": 1.0,
     "Uncommon": 1.2,
@@ -139,6 +136,7 @@ RARITY_MULTIPLIERS = {
     "Legendary": 3.0
 }
 
+# Basic skills
 SKILLS = {
     "Warrior": ["Slam", "Shield Block", "Berserk"],
     "Mage": ["Fireball", "Ice Shield", "Lightning Bolt"],
@@ -157,6 +155,7 @@ SKILLS = {
 
 }
 
+# Enhanced crafting system
 CRAFTING_RECIPES = {
     "Iron Sword": {
         "materials": {"Iron Ingot": 2, "Wood": 1},
@@ -193,19 +192,19 @@ MATERIALS = {
     "Leather": {"areas": ["Plains"], "tool_required": "Hunting Knife"},
     "Steel Ingot": {"areas": ["Blacksmith"], "tool_required": "Furnace"},
     "Gold Ore": {"areas": ["Mountain", "Deep Cave"], "tool_required": "Pickaxe"},
-"Magic Crystal": {"areas": ["Crystal Cave", "Ancient Ruins"], "tool_required": "Magic Chisel"},
-"Fish": {"areas": ["River", "Lake", "Coast"], "tool_required": "Fishing Rod"},
-"Silk Thread": {"areas": ["Forest", "Spider Nest"], "tool_required": "Silk Spinner"},
-"Clay": {"areas": ["Riverbank", "Swamp"], "tool_required": "Shovel"},
-"Coal": {"areas": ["Mine", "Mountain"], "tool_required": "Pickaxe"},
-"Ancient Relic": {"areas": ["Ruins", "Temple"], "tool_required": "Archaeology Kit"},
-"Salt": {"areas": ["Cave", "Desert Spring"], "tool_required": "Pickaxe"},
-"Venom Sac": {"areas": ["Swamp", "Spider Nest"], "tool_required": "Hunting Knife"},
-"Feathers": {"areas": ["Plains", "Cliffside"], "tool_required": "None"}
+    "Magic Crystal": {"areas": ["Crystal Cave", "Ancient Ruins"], "tool_required": "Magic Chisel"},
+    "Fish": {"areas": ["River", "Lake", "Coast"], "tool_required": "Fishing Rod"},
+    "Silk Thread": {"areas": ["Forest", "Spider Nest"], "tool_required": "Silk Spinner"},
+    "Clay": {"areas": ["Riverbank", "Swamp"], "tool_required": "Shovel"},
+    "Coal": {"areas": ["Mine", "Mountain"], "tool_required": "Pickaxe"},
+    "Ancient Relic": {"areas": ["Ruins", "Temple"], "tool_required": "Archaeology Kit"},
+    "Salt": {"areas": ["Cave", "Desert Spring"], "tool_required": "Pickaxe"},
+    "Venom Sac": {"areas": ["Swamp", "Spider Nest"], "tool_required": "Hunting Knife"},
+    "Feathers": {"areas": ["Plains", "Cliffside"], "tool_required": "None"}
 
 }
 
-
+# Sample quests
 QUESTS = [
     {
         "id": 1,
@@ -222,85 +221,78 @@ QUESTS = [
         "reward": {"gold": 200, "exp": 300}
     },
     {
-    "id": 3,
-    "name": "Howling Threat",
-    "description": "Hunt down 5 wolves in the forest",
-    "target": {"monster": "Wolf", "count": 5},
-    "reward": {"gold": 40, "exp": 90}
-    },
-    { 
-    "id": 4,
-    "name": "Skeleton Cleanup",
-    "description": "Destroy 4 skeletons near the cemetery",
-    "target": {"monster": "Skeleton", "count": 4},
-    "reward": {"gold": 60, "exp": 110}
+        "id": 3,
+        "name": "Howling Threat",
+        "description": "Hunt down 5 wolves in the forest",
+        "target": {"monster": "Wolf", "count": 5},
+        "reward": {"gold": 40, "exp": 90}
     },
     {
-    "id": 5,
-    "name": "Ghostly Presence",
-    "description": "Banish 3 ghosts from Stormhaven",
-    "target": {"monster": "Ghost", "count": 3},
-    "reward": {"gold": 70, "exp": 150}
+        "id": 4,
+        "name": "Skeleton Cleanup",
+        "description": "Destroy 4 skeletons near the cemetery",
+        "target": {"monster": "Skeleton", "count": 4},
+        "reward": {"gold": 60, "exp": 110}
     },
     {
-    "id": 6,
-    "name": "Troll Trouble",
-    "description": "Defeat 2 Cave Trolls",
-    "target": {"monster": "Cave Troll", "count": 2},
-    "reward": {"gold": 90, "exp": 180}
+        "id": 5,
+        "name": "Ghostly Presence",
+        "description": "Banish 3 ghosts from Stormhaven",
+        "target": {"monster": "Ghost", "count": 3},
+        "reward": {"gold": 70, "exp": 150}
     },
     {
-    "id": 7,
-    "name": "Dark Knight Duel",
-    "description": "Take down 1 Dark Knight in Shadowmere",
-    "target": {"monster": "Dark Knight", "count": 1},
-    "reward": {"gold": 120, "exp": 250}
+        "id": 6,
+        "name": "Troll Trouble",
+        "description": "Defeat 2 Cave Trolls",
+        "target": {"monster": "Cave Troll", "count": 2},
+        "reward": {"gold": 90, "exp": 180}
     },
     {
-    "id": 8,
-    "name": "Fire Dragon Challenge",
-    "description": "Defeat the Fire Dragon atop Dragon's Peak",
-    "target": {"monster": "Fire Dragon", "count": 1},
-    "reward": {"gold": 250, "exp": 400}
+        "id": 7,
+        "name": "Dark Knight Duel",
+        "description": "Take down 1 Dark Knight in Shadowmere",
+        "target": {"monster": "Dark Knight", "count": 1},
+        "reward": {"gold": 120, "exp": 250}
     },
     {
-    "id": 9,
-    "name": "Crystal Golem Rampage",
-    "description": "Stop 2 Crystal Golems in Crystal Cave",
-    "target": {"monster": "Crystal Golem", "count": 2},
-    "reward": {"gold": 100, "exp": 200}
+        "id": 8,
+        "name": "Fire Dragon Challenge",
+        "description": "Defeat the Fire Dragon atop Dragon's Peak",
+        "target": {"monster": "Fire Dragon", "count": 1},
+        "reward": {"gold": 250, "exp": 400}
     },
     {
-    "id": 10,
-    "name": "Ice Troll Hunt",
-    "description": "Eliminate 3 Ice Trolls in Frostvale",
-    "target": {"monster": "Ice Troll", "count": 3},
-    "reward": {"gold": 80, "exp": 170}
+        "id": 9,
+        "name": "Crystal Golem Rampage",
+        "description": "Stop 2 Crystal Golems in Crystal Cave",
+        "target": {"monster": "Crystal Golem", "count": 2},
+        "reward": {"gold": 100, "exp": 200}
     },
     {
-    "id": 11,
-    "name": "Phoenix Feather",
-    "description": "Collect 1 Phoenix Feather from the Silent Ashes",
-    "target": {"monster": "Phoenix", "count": 1},
-    "reward": {"gold": 300, "exp": 500}
+        "id": 10,
+        "name": "Ice Troll Hunt",
+        "description": "Eliminate 3 Ice Trolls in Frostvale",
+        "target": {"monster": "Ice Troll", "count": 3},
+        "reward": {"gold": 80, "exp": 170}
     },
     {
-     "id": 12,
-     "name": "Water Elemental",
-     "description": "Defeat 2 Water Elementals in Long Shui Zhen",
-     "target": {"monster": "Water Elemental", "count": 2},
-     "reward": {"gold": 110, "exp": 220}
+        "id": 11,
+        "name": "Phoenix Feather",
+        "description": "Collect 1 Phoenix Feather from the Silent Ashes",
+        "target": {"monster": "Phoenix", "count": 1},
+        "reward": {"gold": 300, "exp": 500}
     },
     {
-        "id": 13,
-        "name": "Free the caliphate",
-        "description": "Kill the oprressive caliph",
-        "target": {"monster": "Az-Zālim al-Muqaddas,The Caliph of Al-Khilafah Al-Hadidiyah", "count": 1},
-        "reward": {"gold": 500, "exp": 1000}
+        "id": 12,
+        "name": "Water Elemental",
+        "description": "Defeat 2 Water Elementals in Long Shui Zhen",
+        "target": {"monster": "Water Elemental", "count": 2},
+        "reward": {"gold": 110, "exp": 220}
     }
 ]
 
-
+# Available professions with their bonuses
 PROFESSIONS = {
     "Miner": {"gather_bonus": ["Iron Ore", "Gold Ore"], "craft_bonus": ["weapons"]},
     "Herbalist": {"gather_bonus": ["Red Herb"], "craft_bonus": ["potions"]},
@@ -313,7 +305,7 @@ PROFESSIONS = {
     "Enchanter": {"gather_bonus": ["Magic Crystal"], "craft_bonus": ["enchanted items"]},
 }
 
-
+# Initialize user data with proper typing
 user_data: Dict = {
     "class": None,
     "profession": None,
@@ -335,10 +327,11 @@ user_data: Dict = {
     "active_quests": [],
     "completed_quests": [],
     "materials": {},
-    "tools": ["Axe", "Pickaxe", "Flask", "Hunting Knife"],  
+    "tools": ["Axe", "Pickaxe", "Flask", "Hunting Knife"],  # Starting tools
     "current_area": "Greenwood Village"
 }
 
+# Shop items
 shop_items = [
     # === Basic Equipment ===
     {"name": "Wooden Sword", "type": "weapon", "effect": 5, "price": 30},
@@ -374,7 +367,7 @@ shop_items = [
     {"name": "Crossbow", "type": "weapon", "effect": 13, "price": 140},
     {"name": "Tower Shield", "type": "armor", "effect": 14, "price": 170},
 
-    # === Exotic Equipment === 
+    # === Exotic Equipment ===
     {"name": "Vorpal Blade", "type": "weapon", "effect": 25, "price": 500, "special": "Ignores armor"},
     {"name": "Phoenix Plate", "type": "armor", "effect": 20, "price": 600, "special": "Self-repair over time"},
     {"name": "Elder Wand", "type": "weapon", "effect": 30, "price": 800, "special": "Chance to cast spells for free"},
@@ -396,7 +389,6 @@ shop_items = [
     {"name": "Frozen Soul", "type": "consumable", "effect": "freeze_enemies", "price": 500, "special": "Freezes all enemies for 1 turn", "source": "Hatred frozen soul"},
 ]
 
-
 monsters: List[Dict] = [
     # Greenwood Village Monsters (Level 1-2)
     {"name": "Goblin", "level": 1, "health": 50, "attack": 10, "drops": ["Gold Coin", "Wooden Sword"]},
@@ -405,7 +397,6 @@ monsters: List[Dict] = [
     {"name": "Bandit", "level": 2, "health": 65, "attack": 14, "drops": ["Leather Armor", "Gold Coin"]},
     {"name": "Dire Wolf", "level": 2, "health": 70, "attack": 15, "drops": ["Wolf Fang", "Gold Coin"]},
     {"name": "Goblin Shaman", "level": 2, "health": 55, "attack": 13, "drops": ["Goblin Staff", "Gold Coin"]},
-    {"name": "Goblin King", "level": 3, "health": 80, "attack": 20, "drops": ["Goblin Crown", "Gold Coin"]},
 
     # Stormhaven Monsters (Level 2-3)
     {"name": "Skeleton", "level": 2, "health": 75, "attack": 15, "drops": ["Gold Coin", "Bone Armor"]},
@@ -507,39 +498,9 @@ monsters: List[Dict] = [
     {"name": "Corrupted Ninja", "level": 5, "health": 200, "attack": 30, "drops": ["Ninja Star", "Gold Coin"]},
     {"name": "Shadow Samurai", "level": 6, "health": 260, "attack": 42, "drops": ["Shadow Blade", "Gold Coin"]},
     {"name": "Possessed Katana", "level": 5, "health": 210, "attack": 36, "drops": ["Cursed Katana", "Gold Coin"]},
-
-    # The Iron Caliphate of Al-Khilafah Al-Hadidiyah Monsters (Level 7-12)
-    {"name": "Az-Zālim al-Muqaddas,The Caliph of Al-Khilafah Al-Hadidiyah", "level": 12, "health": 500, "attack": 80, "drops": ["Iron Caliph's Crown", "Gold Coin"]},
-    {"name": "Al-Hadidiyah Guardian", "level": 11, "health": 450, "attack": 75, "drops": ["Guardian's Blade", "Gold Coin"]},
-    {"name": "Al-Hadidiyah Knight", "level": 10, "health": 400, "attack": 70, "drops": ["Knight's Shield", "Gold Coin"]},
-    {"name": "Mercenary of the caliphate", "level": 9, "health": 350, "attack": 65, "drops": ["Mercenary's Dagger", "Gold Coin"]},
-    {"name": "Loyalist of the caliphate", "level": 8, "health": 300, "attack": 60, "drops": ["Loyalist's Blade", "Gold Coin"]},
-    {"name": "High Priest of the caliphate", "level": 7, "health": 250, "attack": 55, "drops": ["High Priest's Staff", "Gold Coin"]},
-    {"name": "Al-Hadidiyah Sorcerer", "level": 7, "health": 240, "attack": 50, "drops": ["Sorcerer's Tome", "Gold Coin"]},
-    {"name": "Steel Golem", "level": 8, "health": 280, "attack": 60, "drops": ["Steel Core", "Gold Coin"]},
-    {"name": "Royal Janissary", "level": 9, "health": 320, "attack": 65, "drops": ["Janissary's Blade", "Gold Coin"]},
-    {"name": "Iron Caliphate General", "level": 10, "health": 370, "attack": 70, "drops": ["General's Armor", "Gold Coin"]},
-
-    #  Tlācahcāyōtl Tletl Tecpanēcatl/Empire of the Sacred Fire and Chains Monsters (Level 7-12)
-    {"name": "Tēcpatl Tlamacazqui,The Emperor of the Sacred Fire and Chains", "level": 12, "health": 550, "attack": 85, "drops": ["Emperor's Crown", "Gold Coin"]},
-    {"name": "Secret Police from The Order of the Black Sun (Yohualli Tōnatiuh)", "level": 10, "health": 400, "attack": 70, "drops": ["Black Sun Dagger", "Gold Coin"]},
-    {"name": "Tlācahcāyōtl Tletl Tecpanēcatl Knight", "level": 11, "health": 450, "attack": 75, "drops": ["Knight's Shield", "Gold Coin"]},
-    {"name": "Tlācahcāyōtl Tletl Tecpanēcatl Guardian", "level": 9, "health": 350, "attack": 65, "drops": ["Guardian's Blade", "Gold Coin"]},
-    {"name": "Tlācahcāyōtl Tletl Tecpanēcatl Sorcerer", "level": 8, "health": 300, "attack": 60, "drops": ["Sorcerer's Tome", "Gold Coin"]},
-    {"name": "Tlācahcāyōtl Tletl Tecpanēcatl High Priest", "level": 7, "health": 250, "attack": 55, "drops": ["High Priest's Staff", "Gold Coin"]},
-    {"name": "Tlācahcāyōtl Tletl Tecpanēcatl Mercenary", "level": 9, "health": 320, "attack": 65, "drops": ["Mercenary's Dagger", "Gold Coin"]},
-    {"name": "Tlācahcāyōtl Tletl Tecpanēcatl Loyalist", "level": 8, "health": 280, "attack": 60, "drops": ["Loyalist's Blade", "Gold Coin"]},
-    {"name": "Tlācahcāyōtl Tletl Tecpanēcatl Royal Guard", "level": 10, "health": 370, "attack": 70, "drops": ["Royal Guard's Sword", "Gold Coin"]},
-
-    # Crimson Abyss Monsters (Level 9-16)
-    {"name": "Crimson Abyss Demon", "level": 15, "health": 600, "attack": 100, "drops": ["Demon's Heart", "Gold Coin"]},
-    {"name": "Crimson Abyss Knight", "level": 14, "health": 550, "attack": 90, "drops": ["Knight's Blade", "Gold Coin"]},
-    {"name": "Crimson Abyss Sorcerer", "level": 13, "health": 500, "attack": 80, "drops": ["Sorcerer's Staff", "Gold Coin"]},
-    {"name": "Crimson Abyss Guardian", "level": 12, "health": 450, "attack": 75, "drops": ["Guardian's Shield", "Gold Coin"]},
-    {"name": "Abyssal Leviathan", "level": 16, "health": 700, "attack": 120, "drops": ["Leviathan Scale", "Gold Coin"]},
-
 ]
 
+# Dungeons with monsters and loot
 dungeons: List[Dict] = [
     # Greenwood Village Dungeons
     {"name": "Goblin's Hideout", "monsters": ["Goblin", "Wolf"], "loot": ["Wooden Sword", "Wolf Pelt", "Gold Coin"]},
@@ -548,7 +509,6 @@ dungeons: List[Dict] = [
     {"name": "Ancient Ruins", "monsters": ["Forest Spider", "Goblin"], "loot": ["Ancient Relic", "Gold Coin"]},
     {"name": "Goblin Fortress", "monsters": ["Goblin", "Dire Wolf"], "loot": ["Goblin Staff", "Gold Coin"]},
     {"name": "Cave of Shadows", "monsters": ["Goblin Shaman"], "loot": ["Gold Coin", "Goblin Staff"]},
-    {"name": "Goblin King's castle", "monsters": ["Goblin King"], "loot": ["Goblin King's Crown", "Gold Coin"]},
 
     # Stormhaven Dungeons
     {"name": "Haunted Crypt", "monsters": ["Skeleton", "Ghost"], "loot": ["Bone Armor", "Spirit Essence", "Gold Coin"]},
@@ -645,39 +605,25 @@ dungeons: List[Dict] = [
     {"name": "Corrupted Ninja's Hideout", "monsters": ["Corrupted Ninja"], "loot": ["Ninja Star", "Gold Coin"]},
     {"name": "Shadow Samurai's Fortress", "monsters": ["Shadow Samurai"], "loot": ["Shadow Blade", "Gold Coin"]},
     {"name": "Possessed Katana's Lair", "monsters": ["Possessed Katana"], "loot": ["Cursed Katana", "Gold Coin"]},
-
-    # The Iron Caliphate of Al-Khilafah Al-Hadidiyah Dungeons
-    {"name": "Caliph's Palace", "monsters": ["Az-Zālim al-Muqaddas,The Caliph of Al-Khilafah Al-Hadidiyah"], "loot": ["Iron Caliph's Crown", "Gold Coin"]},
-    {"name": "Guardian's Keep", "monsters": ["Al-Hadidiyah Guardian"], "loot": ["Guardian's Blade", "Gold Coin"]},
-    {"name": "Knight's Barracks", "monsters": ["Al-Hadidiyah Knight"], "loot": ["Knight's Shield", "Gold Coin"]},
-    {"name": "Mercenary Camp", "monsters": ["Mercenary of the caliphate"], "loot": ["Mercenary's Dagger", "Gold Coin"]},
-    {"name": "Loyalist's mosque", "monsters": ["Loyalist of the caliphate", "High Priest of the caliphate"], "loot": ["Loyalist's Blade", "High Priest's Staff", "Gold Coin"]},
-    {"name": "Sorcerer's Tower", "monsters": ["Al-Hadidiyah Sorcerer"], "loot": ["Sorcerer's Tome", "Gold Coin"]},
-    {"name": "factory of golems", "monsters": ["Steel Golem"], "loot": ["Steel Core", "Gold Coin"]},
-    {"name": "Janissary Barracks", "monsters": ["Royal Janissary"], "loot": ["Janissary's Blade", "Gold Coin"]},
-    {"name": "General's Fortress", "monsters": ["Iron Caliphate General", "Al-Hadidiyah Knight","Mercenary of the caliphate"], "loot": ["General's Armor", "Gold Coin"]},
-
-    # Tlācahcāyōtl Tletl Tecpanēcatl/Empire of the Sacred Fire and Chains Dungeons
-    {"name": "Tlācahcāyōtl Tletl Tecpanēcatl Palace", "monsters": ["Tēcpatl Tlamacazqui,The Emperor of the Sacred Fire and Chains", "Secret Police from The Order of the Black Sun (Yohualli Tōnatiuh)","Tlācahcāyōtl Tletl Tecpanēcatl Knight"], "loot": ["Emperor's Crown", "Black Sun Dagger", "Knight's Shield", "Gold Coin"]},
-    {"name": "Tlācahcāyōtl Tletl Tecpanēcatl Guardian's Keep", "monsters": ["Tlācahcāyōtl Tletl Tecpanēcatl Guardian"], "loot": ["Guardian's Blade", "Gold Coin"]},
-    {"name": "Tlācahcāyōtl Tletl Tecpanēcatl Sorcerer's Tower", "monsters": ["Tlācahcāyōtl Tletl Tecpanēcatl Sorcerer"], "loot": ["Sorcerer's Tome", "Gold Coin"]},
-    {"name": "Tlācahcāyōtl Tletl Tecpanēcatl High Priest's Sanctuary", "monsters": ["Tlācahcāyōtl Tletl Tecpanēcatl High Priest"], "loot": ["High Priest's Staff", "Gold Coin"]},
-    {"name": "Tlācahcāyōtl Tletl Tecpanēcatl Mercenary Camp", "monsters": ["Tlācahcāyōtl Tletl Tecpanēcatl Mercenary"], "loot": ["Mercenary's Dagger", "Gold Coin"]},
-    {"name": "Tlācahcāyōtl Tletl Tecpanēcatl Loyalist Town", "monsters": ["Tlācahcāyōtl Tletl Tecpanēcatl Loyalist"], "loot": ["Loyalist's Blade", "Gold Coin"]},
-    {"name": "Tlācahcāyōtl Tletl Tecpanēcatl Royal Guard's Fortress", "monsters": ["Tlācahcāyōtl Tletl Tecpanēcatl Royal Guard"], "loot": ["Royal Guard's Sword", "Gold Coin"]},
-    
-    # Crimson Abyss Dungeons
-    {"name": "Crimson Abyss Fortress", "monsters": ["Crimson Abyss Demon", "Crimson Abyss Knight"], "loot": ["Demon's Heart", "Knight's Blade", "Gold Coin"]},
-    {"name": "Crimson Abyss Sorcerer's Tower", "monsters": ["Crimson Abyss Sorcerer"], "loot": ["Sorcerer's Staff", "Gold Coin"]},
-    {"name": "Crimson Abyss Guardian's Keep", "monsters": ["Crimson Abyss Guardian"], "loot": ["Guardian's Shield", "Gold Coin"]},
-    {"name": "Abyssal Leviathan's Sunken Palace", "monsters": ["Abyssal Leviathan"], "loot": ["Leviathan Scale", "Gold Coin"]},
 ]
 
+# ANSI color codes for CLI output
+HEADER = '\033[95m'
+OKBLUE = '\033[94m'
+OKGREEN = '\033[92m'
+WARNING = '\033[93m'
+FAIL = '\033[91m'
+ENDC = '\033[0m'
+BOLD = '\033[1m'
+UNDERLINE = '\033[4m'
+
+# Function to display headers with color
 def print_header(title: str) -> None:
     print("\n" + "=" * 40)
-    print(f"{title}")
+    print(f"{BOLD}{OKBLUE}{title}{ENDC}")
     print("=" * 40)
 
+# Show the help menu
 def show_help() -> None:
     print("""
 EPIC RPG CLI - COMMANDS
@@ -748,12 +694,21 @@ SETTINGS
 /travel            - Travel to area
 """)
 
+# Function to handle commands
+def show_location() -> None:
+    print_header("Current Location")
+    current = user_data["current_area"]
+    print(f"You are currently in: {current}")
+    if current in LOCATIONS:
+        print(f"Description: {LOCATIONS[current]['description']}")
+
 def handle_command(cmd: str) -> None:
     commands = {
         "/start": start_guide,
         "/help": show_help,
         "/pet": show_pets,
         "/search": search_resources,
+        "/location": show_location,
         "/location_check": check_location,
         "/professions": show_professions,
         "/stats": show_stats,
@@ -798,6 +753,7 @@ def handle_command(cmd: str) -> None:
         "/prefix": command_prefix
     }
 
+    # Handle commands with arguments
     if cmd.startswith("/fight "):
         fight_monster(cmd.split(" ", 1)[1])
     elif cmd.startswith("/equip "):
@@ -809,6 +765,7 @@ def handle_command(cmd: str) -> None:
     else:
         print("Unknown command. Type '/help' for a list of commands.")
 
+# Define functions
 def start_guide() -> None:
     print_header("Starter Guide")
     print("Welcome to TextRP CLI! Type /help for help!")
@@ -900,24 +857,27 @@ def show_mobs(area: str = None) -> None:
         else:
             print("No monsters in current area")
 
+# Function to handle a fight with a monster
 def fight(monster: Dict) -> None:
-    global user_data
-    monster_health = monster["health"]
+    if not user_data["class"]:
+        print("You need to create a character first! Use /new")
+        return
 
+    monster_health = monster["health"]
     print(f"You encountered a {monster['name']} (Level {monster['level']})!")
 
     while user_data["health"] > 0 and monster_health > 0:
         print(f"\nYour Health: {user_data['health']}/{user_data['max_health']} | {monster['name']} Health: {monster_health}")
         print("\nActions:")
         print("[1] Attack")
-        print("[2] Use Skill")
+        print("[2] Use Skill") 
         print("[3] Use Health Potion")
         print("[4] Flee")
 
         action = input("Choose an action: ")
 
         if action == "1":
-            
+            # Normal attack with critical chance
             damage = random.randint(5, 15) + (user_data["equipped"]["weapon"]["effect"] if user_data["equipped"]["weapon"] else 0)
             if random.random() < CRITICAL_CHANCE:
                 damage *= 2
@@ -931,10 +891,30 @@ def fight(monster: Dict) -> None:
                 for i, skill in enumerate(user_data["skills"], 1):
                     print(f"[{i}] {skill}")
                 try:
+                    pass  # Add your code logic here
+                except Exception as e:
+                    print(f"An error occurred: {e}")
+                    pass  # Add your code logic here
+                except Exception as e:
+                    print(f"An error occurred: {e}")
+                    pass  # Add your code here
+                except Exception as e:
+                    print(f"An error occurred: {e}")
+                except Exception as e:
+                    print(f"An error occurred: {e}")
+                    pass  # Add your code here
+                except Exception as e:
+                    print(f"An error occurred: {e}")
+                    pass  # Add your code here
+                except Exception as e:
+                    print(f"An error occurred: {e}")
+                    pass  # Add your code here
+                except Exception as e:
+                    print(f"An error occurred: {e}")
                     skill_choice = int(input("Choose skill (0 to cancel): "))
                     if 0 < skill_choice <= len(user_data["skills"]):
                         skill = user_data["skills"][skill_choice - 1]
-                        damage = random.randint(15, 25) 
+                        damage = random.randint(15, 25)  # Skills do more damage
                         monster_health -= damage
                         print(f"You used {skill} and dealt {damage} damage!")
                 except ValueError:
@@ -954,7 +934,7 @@ def fight(monster: Dict) -> None:
                 continue
 
         elif action == "4":
-            if random.random() < 0.75: 
+            if random.random() < 0.7:  # 70% chance to flee
                 print("You successfully fled the battle!")
                 return
             print("Failed to flee!")
@@ -965,7 +945,7 @@ def fight(monster: Dict) -> None:
 
         # Monster's turn
         if monster_health > 0:
-            if random.random() > DODGE_CHANCE:  
+            if random.random() > DODGE_CHANCE:  # Dodge chance
                 monster_damage = max(1, random.randint(5, monster["attack"]) - (user_data["equipped"]["armor"]["effect"] if user_data["equipped"]["armor"] else 0))
                 user_data["health"] -= monster_damage
                 print(f"{monster['name']} attacks! You take {monster_damage} damage.")
@@ -978,8 +958,10 @@ def fight(monster: Dict) -> None:
         user_data["exp"] += exp_gain
         print(f"You gained {exp_gain} experience!")
 
+        # Level up check
         check_level_up()
 
+        # Quest progress
         update_quest_progress(monster["name"])
 
         loot(monster)
@@ -1012,15 +994,27 @@ def get_save_slots() -> List[str]:
     saves = [f for f in os.listdir() if f.startswith("save_") and f.endswith(".json")]
     return sorted(saves)
 
+def get_save_directory() -> str:
+    save_dir = os.path.join(os.getcwd(), "saves")
+    os.makedirs(save_dir, exist_ok=True)
+    return save_dir
+
 def save_game(slot: int = 1, auto: bool = False) -> None:
-    save_data = {
-        "user_data": user_data,
-        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "version": "1.0"
-    }
-    
-    filename = f"save_{slot}.json"
     try:
+        save_data = {
+            "user_data": user_data,
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "version": "1.0"
+        }
+
+        save_dir = get_save_directory()
+        filename = os.path.join(save_dir, f"save_{slot}.json")
+
+        # Create backup of existing save
+        if os.path.exists(filename):
+            backup_file = f"{filename}.backup"
+            os.replace(filename, backup_file)
+
         with open(filename, "w") as f:
             json.dump(save_data, f, indent=2)
         if not auto:
@@ -1029,20 +1023,37 @@ def save_game(slot: int = 1, auto: bool = False) -> None:
         print(f"Error saving game: {e}")
 
 def load_game(slot: int = 1) -> bool:
-    filename = f"save_{slot}.json"
     try:
+        save_dir = get_save_directory()
+        filename = os.path.join(save_dir, f"save_{slot}.json")
+
+        if not os.path.exists(filename):
+            print(f"No saved game found in slot {slot}.")
+            return False
+
         with open(filename, "r", encoding='utf-8') as f:
             save_data = json.load(f)
+            if save_data.get("version") != "1.0":
+                print("Warning: Save file version mismatch")
             global user_data
             user_data = save_data["user_data"]
             print(f"Game loaded successfully from slot {slot}!")
             print(f"Save timestamp: {save_data['timestamp']}")
             return True
-    except FileNotFoundError:
-        print(f"No saved game found in slot {slot}.")
-        return False
     except Exception as e:
         print(f"Error loading game: {e}")
+        # Try to load backup if it exists
+        backup_file = f"{filename}.backup"
+        if os.path.exists(backup_file):
+            print("Attempting to load backup...")
+            try:
+                with open(backup_file, "r", encoding='utf-8') as f:
+                    save_data = json.load(f)
+                    user_data = save_data["user_data"]
+                    print("Backup loaded successfully!")
+                    return True
+            except Exception:
+                print("Backup load failed.")
         return False
 
 def auto_save() -> None:
@@ -1054,7 +1065,7 @@ def show_save_slots() -> None:
     if not saves:
         print("No saved games found.")
         return
-        
+
     for save in saves:
         try:
             with open(save, "r") as f:
@@ -1087,6 +1098,7 @@ def show_quests() -> None:
                 print("Quest accepted!")
 
 
+# Function to handle loot drops
 def loot(monster: Dict) -> None:
     global user_data
     drops = monster["drops"]
@@ -1110,22 +1122,37 @@ def loot(monster: Dict) -> None:
     except ValueError:
         print("Invalid input, no loot taken.")
 
+# Function to enter a dungeon
 def enter_dungeon(dungeon_name: str) -> None:
-    global user_data
-    dungeon = next((d for d in dungeons if d["name"].lower() == dungeon_name.lower()), None)
-    if dungeon:
+    try:
+        dungeon = next((d for d in dungeons if d["name"].lower() == dungeon_name.lower()), None)
+        if not dungeon:
+            print(f"Dungeon '{dungeon_name}' not found!")
+            return
+
         print_header(f"Entering {dungeon['name']}...")
         print("Prepare yourself for tough battles and great loot!")
-        for monster_name in dungeon["monsters"]:
-            monster = next(m for m in monsters if m["name"].lower() == monster_name.lower())
-            fight(monster)
-        print(f"You have completed the {dungeon['name']}!")
-        loot_item = random.choice(dungeon["loot"])
-        print(f"At the end of the dungeon, you found: {loot_item}")
-        user_data["inventory"].append(loot_item)
-    else:
-        print(f"{dungeon_name} not found.")
 
+        for monster_name in dungeon["monsters"]:
+            try:
+                monster = next(m for m in monsters if m["name"].lower() == monster_name.lower())
+                if user_data["health"] <= 0:
+                    print("You were defeated! Dungeon run failed.")
+                    return
+                fight(monster)
+            except StopIteration:
+                print(f"Warning: Monster '{monster_name}' not found in database")
+                continue
+
+        if user_data["health"] > 0:
+            print(f"You have completed the {dungeon['name']}!")
+            loot_item = random.choice(dungeon["loot"])
+            print(f"At the end of the dungeon, you found: {loot_item}")
+            user_data["inventory"].append(loot_item)
+    except Exception as e:
+        print(f"Error in dungeon: {e}")
+
+# Shop functions
 def visit_shop() -> None:
     print_header("Shop")
     print("Welcome to the shop! What would you like to buy?")
@@ -1152,38 +1179,57 @@ def buy_item(item_index: int) -> None:
         print("You don't have enough gold!")
 
 def equip_item(item_name: str) -> None:
-    global user_data
-    item = next((i for i in user_data["inventory"] if i.lower() == item_name.lower()), None)
-    if item:
+    if not user_data["class"]:
+        print(f"{FAIL}You need to create a character first! Use /new{ENDC}")
+        return
+
+    try:
+        # Case-insensitive match for item in inventory
+        item = next((i for i in user_data["inventory"] if i.lower() == item_name.lower()), None)
+        if not item:
+            print(f"{WARNING}You don't have {item_name} in your inventory.{ENDC}")
+            return
+
         item_type = None
         effect = 0
 
-        if item in ["Wooden Sword", "Iron Sword", "Flame Sword", "Ice Sword", "Steel Sword"]:
+        # Check if item is a weapon (case-insensitive)
+        weapon_key = next((w for w in WEAPONS if w.lower() == item.lower()), None)
+        if weapon_key:
             item_type = "weapon"
-            effect = 5 if item == "Wooden Sword" else 10 if item == "Iron Sword" else 15 if item == "Steel Sword" else 15
-        elif item in ["Bone Armor", "Iron Armor", "Dark Armor"]:
+            effect = WEAPONS[weapon_key]["damage"]
+        # Check if item is armor by keywords
+        elif any(armor_type in item for armor_type in ["Armor", "Shield", "Helmet", "Boots"]):
             item_type = "armor"
-            effect = 5 if item == "Bone Armor" else 10 if item == "Iron Armor" else 15
+            armor_tier = item.split()[0]
+            effect = {
+                "Bone": 5,
+                "Iron": 10,
+                "Steel": 15,
+                "Dark": 15,
+                "Dragon": 20
+            }.get(armor_tier, 5)
 
         if item_type:
             user_data["equipped"][item_type] = {"name": item, "effect": effect}
             print_header("Equip Item")
-            print(f"You equipped {item}!")
+            print(f"{OKGREEN}You equipped {item}!{ENDC}")
         else:
-            print(f"{item} cannot be equipped.")
-    else:
-        print(f"You don't have {item_name} in your inventory.")
+            print(f"{WARNING}{item} cannot be equipped.{ENDC}")
+    except Exception as e:
+        print(f"{FAIL}Error equipping item: {e}{ENDC}")
 
 def show_stats() -> None:
     print_header("Your Stats")
-    print(f"Level: {user_data['level']}")
-    print(f"Health: {user_data['health']}/{user_data['max_health']}")
-    print(f"Attack: {user_data['attack'] + (user_data['equipped']['weapon']['effect'] if user_data['equipped']['weapon'] else 0)}")
-    print(f"Defense: {user_data['defense'] + (user_data['equipped']['armor']['effect'] if user_data['equipped']['armor'] else 0)}")
-    print(f"Gold: {user_data['gold']}")
-    print(f"Equipped Weapon: {user_data['equipped']['weapon']['name'] if user_data['equipped']['weapon'] else 'None'}")
-    print(f"Equipped Armor: {user_data['equipped']['armor']['name'] if user_data['equipped']['armor'] else 'None'}")
+    print(f"{BOLD}Level:{ENDC} {user_data['level']}")
+    print(f"{BOLD}Health:{ENDC} {user_data['health']}/{user_data['max_health']}")
+    print(f"{BOLD}Attack:{ENDC} {user_data['attack'] + (user_data['equipped']['weapon']['effect'] if user_data['equipped']['weapon'] else 0)}")
+    print(f"{BOLD}Defense:{ENDC} {user_data['defense'] + (user_data['equipped']['armor']['effect'] if user_data['equipped']['armor'] else 0)}")
+    print(f"{BOLD}Gold:{ENDC} {user_data['gold']}")
+    print(f"{BOLD}Equipped Weapon:{ENDC} {user_data['equipped']['weapon']['name'] if user_data['equipped']['weapon'] else 'None'}")
+    print(f"{BOLD}Equipped Armor:{ENDC} {user_data['equipped']['armor']['name'] if user_data['equipped']['armor'] else 'None'}")
 
+# New functions for additional commands
 def list_dungeons() -> None:
     print_header("Dungeon List")
     for dungeon in dungeons:
@@ -1194,12 +1240,26 @@ def show_bestiary() -> None:
     for monster in monsters:
         print(f"Name: {monster['name']}, Level: {monster['level']}, Health: {monster['health']}, Attack: {monster['attack']}, Drops: {', '.join(monster['drops'])}")
 
+def show_pets() -> None:
+    print_header("Your Pets")
+    if not user_data["pets"]:
+        print("You have no pets.")
+        return
+    for pet_name in user_data["pets"]:
+        pet_info = PETS.get(pet_name, None)
+        if pet_info:
+            desc = pet_info.get("description", "No description available.")
+            print(f"- {pet_name}: {desc}")
+        else:
+            print(f"- {pet_name}: No information available.")
+
 def show_support() -> None:
     print_header("Support Information")
     print("For support, visit our Discord server or check the wiki.")
     print("Wiki: https://example.com/wiki")
     print("Discord: https://discord.gg/example")
 
+# Function stubs for other commands
 def farming_guide() -> None:
     print_header("Farming Guide")
     print("Farming allows you to gather resources and grow crops for crafting and trading.")
@@ -1288,6 +1348,7 @@ def create_character() -> None:
             break
         print("Invalid class. Try again.")
 
+# Sample villages (added for completeness)
 villages = [
     {"name": "Greenwood", "population": 150, "special_items": ["Herbal Potion", "Wooden Bow"]},
     {"name": "Stonehaven", "population": 200, "special_items": ["Iron Sword", "Shield"]},
@@ -1300,6 +1361,7 @@ villages = [
     {"name": "Long Shui Zhen", "population": 140, "special_items": ["Dragon Scale", "Water Orb"]},
 ]
 
+# Sample biomes (added for completeness)
 biomes = [
 {
    "name":"Forest",
@@ -1449,16 +1511,17 @@ biomes = [
    "name":"Skyward Cavern",
    "description":"A network of caves suspended in the sky, connected by floating platforms and filled with rare ores and aerial creatures."
 }
-
-
 ]
 
+# Horse festival function (added for completeness)
 def horse_festival() -> None:
     print_header("Horse Festival")
     print("The annual Horse Festival is a grand event with exciting races and prizes.")
 
+# New function for gathering materials
 def gather_materials(area: str) -> None:
-    if area not in [mat["areas"] for mat in MATERIALS.values()]:
+    # Fix check to see if area is in any MATERIALS areas list
+    if not any(area in mat["areas"] for mat in MATERIALS.values()):
         print(f"No materials can be gathered in {area}")
         return
 
@@ -1517,6 +1580,7 @@ def craft_item() -> None:
             recipe_name = available_recipes[choice - 1]
             recipe = CRAFTING_RECIPES[recipe_name]
 
+            # Check materials
             can_craft = True
             for material, amount in recipe["materials"].items():
                 if user_data["materials"].get(material, 0) < amount:
@@ -1524,9 +1588,11 @@ def craft_item() -> None:
                     can_craft = False
 
             if can_craft:
+                # Consume materials
                 for material, amount in recipe["materials"].items():
                     user_data["materials"][material] -= amount
 
+                # Add item to inventory
                 user_data["inventory"].append(recipe_name)
                 print(f"Successfully crafted {recipe_name}!")
         else:
@@ -1567,85 +1633,98 @@ def travel_to_area() -> None:
         print("Invalid input")
 
 def fight_monster(monster_name: str) -> None:
-    monster = next((m for m in monsters if m["name"].lower() == monster_name.lower()), None)
-    if not monster:
-        print(f"Monster '{monster_name}' not found!")
-        return
-
-    if user_data["health"] <= 0:
-        print("You can't fight while defeated! Use a healing potion or rest.")
-        return
-
-    print_header(f"Fighting {monster['name']}")
-    monster_health = monster["health"]
-
-    while user_data["health"] > 0 and monster_health > 0:
-        try:
-            print(f"\nYour Health: {user_data['health']}/{user_data['max_health']}")
-            print(f"Monster Health: {monster_health}/{monster['health']}")
-            print("\nActions:")
-            print("1. Attack")
-            print("2. Use Healing Potion")
-            print("3. Flee")
-
-            choice = input("Choose action (1-3): ").strip()
-
-            if choice == "1":
-                base_damage = user_data["attack"]
-                weapon_bonus = user_data["equipped"]["weapon"]["effect"] if user_data["equipped"]["weapon"] else 0
-                damage = base_damage + weapon_bonus
-
-                if random.random() < CRITICAL_CHANCE:
-                    damage *= 2
-                    print("Critical hit!")
-
-                monster_health -= damage
-                print(f"You deal {damage} damage!")
-
-            elif choice == "2":
-                if "Healing Potion" in user_data["inventory"]:
-                    heal_amount = 30
-                    user_data["health"] = min(user_data["max_health"], user_data["health"] + heal_amount)
-                    user_data["inventory"].remove("Healing Potion")
-                    print(f"You heal for {heal_amount} health!")
-                else:
-                    print("No healing potions available!")
-                    continue
-
-            elif choice == "3":
-                if random.random() < 0.6:
-                    print("You successfully fled!")
-                    return
-                print("Failed to flee!")
-
-            else:
-                print("Invalid choice!")
-                continue
-
-            if monster_health > 0:
-                defense_bonus = user_data["equipped"]["armor"]["effect"] if user_data["equipped"]["armor"] else 0
-                damage_taken = max(1, monster["attack"] - defense_bonus)
-                if random.random() > DODGE_CHANCE:
-                    user_data["health"] -= damage_taken
-                    print(f"Monster deals {damage_taken} damage!")
-                else:
-                    print("You dodged the attack!")
-
-        except Exception as e:
-            print(f"Error during combat: {e}")
+    try:
+        monster = next((m for m in monsters if m["name"].lower() == monster_name.lower()), None)
+        if not monster:
+            print(f"Monster '{monster_name}' not found!")
             return
 
-    if monster_health <= 0:
-        print(f"\nYou defeated the {monster['name']}!")
-        exp_gain = monster["level"] * 20
-        user_data["exp"] += exp_gain
-        print(f"Gained {exp_gain} experience!")
+        if user_data["health"] <= 0:
+            print("You can't fight while defeated! Use a healing potion or rest.")
+            return
 
-        loot(monster)
+        # Check if monster is in current area
+        if monster["name"] not in LOCATIONS.get(user_data["current_area"], {}).get("monsters", []):
+            print(f"{monster['name']} is not in this area! Travel to find it.")
+            return
 
-        check_level_up()
-    else:
-        print("You were defeated!")
+        print_header(f"Fighting {monster['name']}")
+        monster_health = monster["health"]
+
+        while user_data["health"] > 0 and monster_health > 0:
+            try:
+                print(f"\nYour Health: {user_data['health']}/{user_data['max_health']}")
+                print(f"Monster Health: {monster_health}/{monster['health']}")
+                print("\nActions:")
+                print("1. Attack")
+                print("2. Use Healing Potion")
+                print("3. Flee")
+
+                choice = input("Choose action (1-3): ").strip()
+
+                if choice == "1":
+                    # Calculate damage with equipped weapon
+                    base_damage = user_data["attack"]
+                    weapon_bonus = user_data["equipped"]["weapon"]["effect"] if user_data["equipped"]["weapon"] else 0
+                    damage = base_damage + weapon_bonus
+
+                    if random.random() < CRITICAL_CHANCE:
+                        damage *= 2
+                        print("Critical hit!")
+
+                    monster_health -= damage
+                    print(f"You deal {damage} damage!")
+
+                elif choice == "2":
+                    if "Healing Potion" in user_data["inventory"]:
+                        heal_amount = 30
+                        user_data["health"] = min(user_data["max_health"], user_data["health"] + heal_amount)
+                        user_data["inventory"].remove("Healing Potion")
+                        print(f"You heal for {heal_amount} health!")
+                    else:
+                        print("No healing potions available!")
+                        continue
+
+                elif choice == "3":
+                    if random.random() < 0.6:
+                        print("You successfully fled!")
+                        return
+                    print("Failed to flee!")
+
+                else:
+                    print("Invalid choice!")
+                    continue
+
+                # Monster attacks if still alive
+                if monster_health > 0:
+                    defense_bonus = user_data["equipped"]["armor"]["effect"] if user_data["equipped"]["armor"] else 0
+                    damage_taken = max(1, monster["attack"] - defense_bonus)
+                    if random.random() > DODGE_CHANCE:
+                        user_data["health"] -= damage_taken
+                        print(f"Monster deals {damage_taken} damage!")
+                    else:
+                        print("You dodged the attack!")
+
+            except Exception as e:
+                print(f"Error during combat: {e}")
+                continue
+
+        if monster_health <= 0:
+            print(f"\nYou defeated the {monster['name']}!")
+            exp_gain = monster["level"] * 20
+            user_data["exp"] += exp_gain
+            print(f"Gained {exp_gain} experience!")
+
+            # Handle loot
+            loot(monster)
+
+            # Check for level up
+            check_level_up()
+        else:
+            print("You were defeated!")
+
+    except Exception as e:
+        print(f"Error initiating combat: {e}")
 
 def check_level_up() -> None:
     while user_data["exp"] >= EXP_TO_LEVEL * user_data["level"]:
@@ -1662,37 +1741,62 @@ def check_level_up() -> None:
 
 def show_weapon_info() -> None:
     print_header("Weapon Information")
+    for weapon, stats in WEAPONS.items():
+        print(f"\n{weapon}:")
+        print(f"  Damage: {stats['damage']}")
+        print(f"  Speed: {stats['speed']}")
+        print(f"  Price: {stats['price']} gold")
+        if 'effect' in stats:
+            print(f"  Special Effect: {stats['effect']}")
 
-def save_prompt() -> None:
-    print_header("Save Game")
-    show_save_slots()
-    try:
-        slot = int(input("\nEnter save slot number (1-5): "))
-        if 1 <= slot <= 5:
-            save_game(slot)
-        else:
-            print("Invalid slot number. Choose between 1 and 5.")
-    except ValueError:
-        print("Invalid input. Please enter a number.")
 
-def load_prompt() -> None:
-    print_header("Load Game")
-    show_save_slots()
-    try:
-        slot = int(input("\nEnter save slot number to load: "))
-        load_game(slot)
-    except ValueError:
-        print("Invalid input. Please enter a number.")
 
-def delete_save_prompt() -> None:
-    print_header("Delete Save")
-    show_save_slots()
-    try:
-        slot = int(input("\nEnter save slot number to delete: "))
-        if input(f"Are you sure you want to delete save slot {slot}? (y/n): ").lower() == 'y':
-            delete_save(slot)
-    except ValueError:
-        print("Invalid input. Please enter a number.")
+
+# Enhanced pet system
+PETS = {
+    "Cat": {"price": 50, "boost": {"attack": 2}, "description": "A stealthy companion that boosts attack"},
+    "Dog": {"price": 50, "boost": {"defense": 2}, "description": "A loyal friend that boosts defense"},
+    "Dragon Hatchling": {"price": 200, "boost": {"attack": 5, "health": 10}, "description": "A baby dragon that boosts attack and health"},
+    "Phoenix Chick": {"price": 200, "boost": {"health": 15}, "description": "A magical bird that boosts health"},
+    "Battle Wolf": {"price": 150, "boost": {"attack": 4}, "description": "A fierce wolf that boosts attack"},
+    "Guardian Bear": {"price": 150, "boost": {"defense": 4}, "description": "A strong bear that boosts defense"},
+    "Spirit Fox": {"price": 175, "boost": {"exp_gain": 10}, "description": "A mystical fox that boosts experience gain"},
+    "Lucky Rabbit": {"price": 100, "boost": {"gold_find": 10}, "description": "A lucky companion that helps find more gold"}
+}
+
+
+def show_professions() -> None:
+    print_header("Professions")
+
+    if user_data["has_chosen_profession"]:
+        print(f"Your current profession: {user_data['profession']}")
+        if user_data["profession"] in PROFESSIONS:
+            bonuses = PROFESSIONS[user_data["profession"]]
+            print("\nProfession bonuses:")
+            print(f"Gathering bonus for: {', '.join(bonuses['gather_bonus'])}")
+            print(f"Crafting bonus for: {', '.join(bonuses['craft_bonus'])}")
+        return
+
+    print("Available professions:")
+    for prof, bonuses in PROFESSIONS.items():
+        print(f"\n{prof}:")
+        print(f"  Gathering bonus: {', '.join(bonuses['gather_bonus'])}")
+        print(f"  Crafting bonus: {', '.join(bonuses['craft_bonus'])}")
+
+    choice = input("\nChoose a profession (or press Enter to skip): ").capitalize()
+    if choice in PROFESSIONS:
+        user_data["profession"] = choice
+        user_data["has_chosen_profession"] = True
+        print(f"\nYou are now a {choice}!")
+    elif choice:
+        print("Invalid profession choice.")
+    for weapon, stats in WEAPONS.items():
+        print(f"\n{weapon}:")
+        print(f"  Damage: {stats['damage']}")
+        print(f"  Speed: {stats['speed']}")
+        print(f"  Price: {stats['price']} gold")
+        if 'effect' in stats:
+            print(f"  Special Effect: {stats['effect']}")
 
 def check_location() -> None:
     print_header("Location Information")
@@ -1751,121 +1855,63 @@ def search_resources() -> None:
         else:
             print("No materials found in this area.")
 
-def show_pets() -> None:
-    print_header("Pet System")
-    if not user_data["pets"]:
-        print("You don't have any pets yet!")
-        print("\nAvailable pets to adopt:")
-        for pet_name, pet_data in PETS.items():
-            print(f"- {pet_name} ({pet_data['price']} gold) - {pet_data['description']}")
+def save_prompt() -> None:
+    print_header("Save Game")
+    show_save_slots()
+    try:
+        slot = int(input("\nEnter save slot number (1-5): "))
+        if 1 <= slot <= 5:
+            save_game(slot)
+        else:
+            print("Invalid slot number. Choose between 1 and 5.")
+    except ValueError:
+        print("Invalid input. Please enter a number.")
 
-        try:
-            choice = input("\nChoose a pet to adopt (pet name or 0 to cancel): ")
-            if choice == "0":
-                return
-            if choice in PETS:
-                pet_name = choice
-                pet_data = PETS[pet_name]
-                if user_data["gold"] >= pet_data["price"]:
-                    user_data["gold"] -= pet_data["price"]
-                    user_data["pets"].append(pet_name)
-                    print(f"\nYou adopted a {pet_name}!")
-                    for stat, boost in pet_data["boost"].items():
-                        if stat == "attack":
-                            user_data["attack"] += boost
-                        elif stat == "defense":
-                            user_data["defense"] += boost
-                        elif stat == "health":
-                            user_data["max_health"] += boost
-                            user_data["health"] = user_data["max_health"]
-                        elif stat == "exp_gain":
-                            pass
-                        elif stat == "gold_find":
-                            pass
-                else:
-                    print("You don't have enough gold.")
-            else:
-                print("Invalid pet choice.")
-        except ValueError:
-            print("Invalid choice")
-    else:
-        print("Your pets:")
-        for pet in user_data["pets"]:
-            print(f"- {pet}")
+def load_prompt() -> None:
+    print_header("Load Game")
+    show_save_slots()
+    try:
+        slot = int(input("\nEnter save slot number to load: "))
+        load_game(slot)
+    except ValueError:
+        print("Invalid input. Please enter a number.")
 
-def show_professions() -> None:
-    print_header("Professions")
-
-    if user_data["has_chosen_profession"]:
-        print(f"Your current profession: {user_data['profession']}")
-        if user_data["profession"] in PROFESSIONS:
-            bonuses = PROFESSIONS[user_data["profession"]]
-            print("\nProfession bonuses:")
-            print(f"Gathering bonus for: {', '.join(bonuses['gather_bonus'])}")
-            print(f"Crafting bonus for: {', '.join(bonuses['craft_bonus'])}")
-        return
-
-    print("Available professions:")
-    for prof, bonuses in PROFESSIONS.items():
-        print(f"\n{prof}:")
-        print(f"  Gathering bonus: {', '.join(bonuses['gather_bonus'])}")
-        print(f"  Crafting bonus: {', '.join(bonuses['craft_bonus'])}")
-
-    choice = input("\nChoose a profession (or press Enter to skip): ").capitalize()
-    if choice in PROFESSIONS:
-        user_data["profession"] = choice
-        user_data["has_chosen_profession"] = True
-        print(f"\nYou are now a {choice}!")
-    elif choice:
-        print("Invalid profession choice.")
-    for weapon, stats in WEAPONS.items():
-        print(f"\n{weapon}:")
-        print(f"  Damage: {stats['damage']}")
-        print(f"  Speed: {stats['speed']}")
-        print(f"  Price: {stats['price']} gold")
-        if 'effect' in stats:
-            print(f"  Special Effect: {stats['effect']}")
+def delete_save_prompt() -> None:
+    print_header("Delete Save")
+    show_save_slots()
+    try:
+        slot = int(input("\nEnter save slot number to delete: "))
+        if input(f"Are you sure you want to delete save slot {slot}? (y/n): ").lower() == 'y':
+            delete_save(slot)
+    except ValueError:
+        print("Invalid input. Please enter a number.")
 
 
+
+# Main loop
 if __name__ == "__main__":
-    print("Welcome to Enhanced TextRP CLI!")
+    print("Welcome to TextRP CLI!")
     print("Type '/help' for commands or '/new' to create a character.")
 
-    AUTO_SAVE_INTERVAL = 300  
+    # Auto-save interval in seconds
+    AUTO_SAVE_INTERVAL = 300  # 5 minutes
     last_save = time.time()
 
     while True:
         try:
-            # Auto-save
+            # Auto-save check
             if time.time() - last_save > AUTO_SAVE_INTERVAL:
                 auto_save()
                 last_save = time.time()
 
-            command = input("\n>> ").strip().lower()
-            handle_command(command)
-            
-            # Auto-save 
-            if command in ["/fight", "/dungeon", "/equip", "/travel"]:
+            command = input("\n>> ").strip()
+            # Do not convert to lowercase to preserve command arguments
+            handle_command(command.lower())
+
+            # Auto-save after important actions (check command prefix only)
+            if command.lower().startswith(("/fight", "/dungeon", "/equip", "/travel")):
                 auto_save()
                 last_save = time.time()
         except Exception as e:
             print(f"Error: {e}")
             print("Type '/help' for available commands.")
-
-PETS = {
-    "Cat": {"price": 50, "boost": {"attack": 2}, "description": "A stealthy companion that boosts attack"},
-    "Dog": {"price": 50, "boost": {"defense": 2}, "description": "A loyal friend that boosts defense"},
-    "Dragon Hatchling": {"price": 200, "boost": {"attack": 5, "health": 10}, "description": "A baby dragon that boosts attack and health"},
-    "Phoenix Chick": {"price": 200, "boost": {"health": 15}, "description": "A magical bird that boosts health"},
-    "Battle Wolf": {"price": 150, "boost": {"attack": 4}, "description": "A fierce wolf that boosts attack"},
-    "Guardian Bear": {"price": 150, "boost": {"defense": 4}, "description": "A strong bear that boosts defense"},
-    "Spirit Fox": {"price": 175, "boost": {"exp_gain": 10}, "description": "A mystical fox that boosts experience gain"},
-    "Lucky Rabbit": {"price": 100, "boost": {"gold_find": 10}, "description": "A lucky companion that helps find more gold"},
-    "Mystic Owl": {"price": 125, "boost": {"intelligence": 5}, "description": "An intelligent owl that boosts intelligence"},
-    "Shadow Panther": {"price": 175, "boost": {"stealth": 5}, "description": "A stealthy panther that boosts stealth"},
-    "Thunder Eagle": {"price": 200, "boost": {"speed": 5}, "description": "A fast eagle that boosts speed"},
-    "Earth Golem": {"price": 250, "boost": {"defense": 10}, "description": "A sturdy golem that boosts defense"},
-    "Fire Salamander": {"price": 250, "boost": {"attack": 10}, "description": "A fiery creature that boosts attack"},
-    "Baby Wyvern": {"price": 300, "boost": {"attack": 15, "health": 20}, "description": "A young wyvern that boosts attack and health"},
-    "Ice Sprite": {"price": 300, "boost": {"defense": 15}, "description": "A magical sprite that boosts defense"},
-}
