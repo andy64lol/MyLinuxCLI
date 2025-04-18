@@ -617,6 +617,19 @@ ENDC = '\033[0m'
 BOLD = '\033[1m'
 UNDERLINE = '\033[4m'
 
+import sys
+import time
+
+def print_animated(text: str) -> None:
+    length = len(text)
+    # Determine delay per character: longer text = faster (min 0.005s, max 0.03s)
+    delay = max(0.005, min(0.03, 1.0 / (length * 10)))
+    for char in text:
+        sys.stdout.write(char)
+        sys.stdout.flush()
+        time.sleep(delay)
+    print()  # Newline after printing
+
 # Function to display headers with color
 def print_header(title: str) -> None:
     print("\n" + "=" * 40)
@@ -625,8 +638,8 @@ def print_header(title: str) -> None:
 
 # Show the help menu
 def show_help() -> None:
-    print("""
-EPIC RPG CLI - COMMANDS
+    help_text = """
+TEXTRP CLI - COMMANDS
 
 PROGRESS
 /start            - Starter guide
@@ -692,17 +705,24 @@ SETTINGS
 /gather            - Gather materials
 /materials         - Show materials
 /travel            - Travel to area
-""")
+"""
+    print_animated(help_text)
 
 # Function to handle commands
 def show_location() -> None:
     print_header("Current Location")
     current = user_data["current_area"]
-    print(f"You are currently in: {current}")
+    print_animated(f"You are currently in: {current}")
     if current in LOCATIONS:
-        print(f"Description: {LOCATIONS[current]['description']}")
+        print_animated(f"Description: {LOCATIONS[current]['description']}")
 
 def handle_command(cmd: str) -> None:
+    allowed_commands_without_character = {"/new", "/load", "/help"}
+
+    if user_data["class"] is None and cmd not in allowed_commands_without_character:
+        print_animated("You need to create a character first! Use /new to start your adventure.")
+        return
+
     commands = {
         "/start": start_guide,
         "/help": show_help,
@@ -735,9 +755,9 @@ def handle_command(cmd: str) -> None:
         "/drops": show_drops,
         "/enchants": show_enchants,
         "/horse": horse_festival,
-        "/trading": lambda: print("Trading system coming soon!"),
-        "/professions": lambda: print("Professions system coming soon!"),
-        "/events": lambda: print("No active events at the moment."),
+        "/trading": lambda: print_animated("Trading system coming soon!"),
+        "/professions": lambda: print_animated("Professions system coming soon!"),
+        "/events": lambda: print_animated("No active events at the moment."),
         "/gambling": gambling_guide,
         "/codes": redeem_codes,
         "/duel": duel_info,
@@ -749,7 +769,7 @@ def handle_command(cmd: str) -> None:
         "/dailymob": daily_monster,
         "/weapon_info": lambda: show_weapon_info(),
         "/settings": user_settings,
-        "/setprogress": lambda: print("Progress system coming soon!"),
+        "/setprogress": lambda: print_animated("Progress system coming soon!"),
         "/prefix": command_prefix
     }
 
@@ -763,7 +783,7 @@ def handle_command(cmd: str) -> None:
     elif cmd in commands:
         commands[cmd]()
     else:
-        print("Unknown command. Type '/help' for a list of commands.")
+        print_animated("Unknown command. Type '/help' for a list of commands.")
 
 # Define functions
 def start_guide() -> None:
@@ -866,62 +886,46 @@ def fight(monster: Dict) -> None:
     monster_health = monster["health"]
     print(f"You encountered a {monster['name']} (Level {monster['level']})!")
 
-    while user_data["health"] > 0 and monster_health > 0:
-        print(f"\nYour Health: {user_data['health']}/{user_data['max_health']} | {monster['name']} Health: {monster_health}")
-        print("\nActions:")
-        print("[1] Attack")
-        print("[2] Use Skill") 
-        print("[3] Use Health Potion")
-        print("[4] Flee")
+        while user_data["health"] > 0 and monster_health > 0:
+            print(f"\nYour Health: {user_data['health']}/{user_data['max_health']} | {monster['name']} Health: {monster_health}")
+            print("\nActions:")
+            print("[1] Attack")
+            print("[2] Use Skill") 
+            print("[3] Use Health Potion")
+            print("[4] Flee")
 
-        action = input("Choose an action: ")
+            action = input("Choose an action: ")
 
-        if action == "1":
-            # Normal attack with critical chance
-            damage = random.randint(5, 15) + (user_data["equipped"]["weapon"]["effect"] if user_data["equipped"]["weapon"] else 0)
-            if random.random() < CRITICAL_CHANCE:
-                damage *= 2
-                print("Critical hit!")
-            monster_health -= damage
-            print(f"You dealt {damage} damage to {monster['name']}!")
+            if action == "1":
+                # Normal attack with critical chance
+                damage = random.randint(5, 15) + (user_data["equipped"]["weapon"]["effect"] if user_data["equipped"]["weapon"] else 0)
+                if random.random() < CRITICAL_CHANCE:
+                    damage *= 2
+                    print("Critical hit!")
+                monster_health -= damage
+                print(f"You dealt {damage} damage to {monster['name']}!")
 
-        elif action == "2":
-            if user_data["skills"]:
-                print("\nAvailable skills:")
-                for i, skill in enumerate(user_data["skills"], 1):
-                    print(f"[{i}] {skill}")
-                try:
-                    pass  # Add your code logic here
-                except Exception as e:
-                    print(f"An error occurred: {e}")
-                    pass  # Add your code logic here
-                except Exception as e:
-                    print(f"An error occurred: {e}")
-                    pass  # Add your code here
-                except Exception as e:
-                    print(f"An error occurred: {e}")
-                except Exception as e:
-                    print(f"An error occurred: {e}")
-                    pass  # Add your code here
-                except Exception as e:
-                    print(f"An error occurred: {e}")
-                    pass  # Add your code here
-                except Exception as e:
-                    print(f"An error occurred: {e}")
-                    pass  # Add your code here
-                except Exception as e:
-                    print(f"An error occurred: {e}")
-                    skill_choice = int(input("Choose skill (0 to cancel): "))
-                    if 0 < skill_choice <= len(user_data["skills"]):
-                        skill = user_data["skills"][skill_choice - 1]
-                        damage = random.randint(15, 25)  # Skills do more damage
-                        monster_health -= damage
-                        print(f"You used {skill} and dealt {damage} damage!")
-                except ValueError:
-                    print("Invalid choice.")
-            else:
-                print("You have no skills available!")
-                continue
+            elif action == "2":
+                if user_data["skills"]:
+                    print("\nAvailable skills:")
+                    for i, skill in enumerate(user_data["skills"], 1):
+                        print(f"[{i}] {skill}")
+                    try:
+                        skill_choice = int(input("Choose skill (0 to cancel): "))
+                        if skill_choice == 0:
+                            continue
+                        if 1 <= skill_choice <= len(user_data["skills"]):
+                            skill = user_data["skills"][skill_choice - 1]
+                            damage = random.randint(15, 25)  # Skills do more damage
+                            monster_health -= damage
+                            print(f"You used {skill} and dealt {damage} damage!")
+                        else:
+                            print("Invalid skill choice.")
+                    except ValueError:
+                        print("Invalid input.")
+                else:
+                    print("You have no skills available!")
+                    continue
 
         elif action == "3":
             if "Healing Potion" in user_data["inventory"]:
@@ -1675,25 +1679,34 @@ def fight_monster(monster_name: str) -> None:
                     monster_health -= damage
                     print(f"You deal {damage} damage!")
 
-                elif choice == "2":
-                    if "Healing Potion" in user_data["inventory"]:
-                        heal_amount = 30
-                        user_data["health"] = min(user_data["max_health"], user_data["health"] + heal_amount)
-                        user_data["inventory"].remove("Healing Potion")
-                        print(f"You heal for {heal_amount} health!")
-                    else:
-                        print("No healing potions available!")
-                        continue
-
-                elif choice == "3":
-                    if random.random() < 0.6:
-                        print("You successfully fled!")
-                        return
-                    print("Failed to flee!")
-
-                else:
-                    print("Invalid choice!")
+            elif choice == "2":
+                if user_data["skills"]:
+                    print("\nAvailable skills:")
+                    for i, skill in enumerate(user_data["skills"], 1):
+                        print(f"[{i}] {skill}")
+            try:
+                skill_choice = int(input("Choose skill (0 to cancel): "))
+                if skill_choice == 0:
                     continue
+                if 1 <= skill_choice <= len(user_data["skills"]):
+                    skill = user_data["skills"][skill_choice - 1]
+                    damage = random.randint(15, 25)  # Skills do more damage
+                    monster_health -= damage
+                    print(f"You used {skill} and dealt {damage} damage!")
+                else:
+                    print("Invalid skill choice.")
+            except ValueError:
+                print("Invalid input.")
+
+            elif choice == "3":
+                if random.random() < 0.6:
+                    print("You successfully fled!")
+                    return
+                print("Failed to flee!")
+
+            else:
+                print("Invalid choice!")
+                continue
 
                 # Monster attacks if still alive
                 if monster_health > 0:
@@ -1706,7 +1719,7 @@ def fight_monster(monster_name: str) -> None:
                         print("You dodged the attack!")
 
             except Exception as e:
-                print(f"Error during combat: {e}")
+                  print(f"Error during combat: {e}")
                 continue
 
         if monster_health <= 0:
