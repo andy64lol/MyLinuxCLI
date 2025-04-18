@@ -1,7 +1,7 @@
 # MyLinuxCLI
 ![MyLinuxCLI](https://img.shields.io/badge/MyLinuxCLI-Python%20%7C%20Bash-blue?logo=github&logoColor=white&labelColor=222&style=for-the-badge)
 
-A personal collection of handy Linux CLI.
+A personal collection of Linux CLI made using python.
 
 ---
 
@@ -28,8 +28,13 @@ Simply run the scripts from the terminal:
 ```bash
 ./(insert name).sh
 ```
+or
 
-Make sure the scripts are executable:
+```bash
+python3 (programm name here)
+```
+
+Also make sure the scripts are executable:
 
 ```bash
 chmod +x run_(whatever the app is).sh
