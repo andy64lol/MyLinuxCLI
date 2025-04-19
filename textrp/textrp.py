@@ -616,16 +616,25 @@ FAIL = '\033[91m'
 ENDC = '\033[0m'
 BOLD = '\033[1m'
 UNDERLINE = '\033[4m'
+CYAN = '\033[96m'
+MAGENTA = '\033[35m'
+YELLOW = '\033[33m'
+RED = '\033[31m'
+GREEN = '\033[32m'
+BLUE = '\033[34m'
 
 import sys
 import time
 
-def print_animated(text: str) -> None:
+def print_colored(text: str, color_code: str) -> None:
+    print(f"{color_code}{text}{ENDC}")
+
+def print_animated(text: str, color_code: str = ENDC) -> None:
     length = len(text)
     # Determine delay per character: longer text = faster (min 0.005s, max 0.03s)
     delay = max(0.005, min(0.03, 1.0 / (length * 10)))
     for char in text:
-        sys.stdout.write(char)
+        sys.stdout.write(f"{color_code}{char}{ENDC}")
         sys.stdout.flush()
         time.sleep(delay)
     print()  # Newline after printing
@@ -633,7 +642,7 @@ def print_animated(text: str) -> None:
 # Function to display headers with color
 def print_header(title: str) -> None:
     print("\n" + "=" * 40)
-    print(f"{BOLD}{OKBLUE}{title}{ENDC}")
+    print(f"{BOLD}{MAGENTA}{title}{ENDC}")
     print("=" * 40)
 
 # Show the help menu
@@ -706,7 +715,15 @@ SETTINGS
 /materials         - Show materials
 /travel            - Travel to area
 """
-    print_animated(help_text)
+
+    for line in help_text.strip().split("\n"):
+        stripped = line.strip()
+        if stripped.isupper() and len(stripped) > 0:
+            print_colored(stripped, MAGENTA)
+        elif stripped.startswith("/"):
+            print_colored(stripped, CYAN)
+        else:
+            print(stripped)
 
 # Function to handle commands
 def show_location() -> None:
@@ -717,7 +734,7 @@ def show_location() -> None:
         print_animated(f"Description: {LOCATIONS[current]['description']}")
 
 def handle_command(cmd: str) -> None:
-    allowed_commands_without_character = {"/new", "/load", "/help"}
+    allowed_commands_without_character = {"/new", "/load", "/help", "/exit", "/prefix", "/save"}
 
     if user_data["class"] is None and cmd not in allowed_commands_without_character:
         print_animated("You need to create a character first! Use /new to start your adventure.")
@@ -746,6 +763,9 @@ def handle_command(cmd: str) -> None:
         "/delete_save": lambda: delete_save_prompt(),
         "/exit": exit_game,
         "/guild": guild_guide,
+        "/guild_join": guild_join,
+        "/guild_leave": guild_leave,
+        "/guild_list": guild_list,
         "/areas": area_guides,
         "/dungeons": dungeon_guides,
         "/timetravel": time_travel_guide,
@@ -755,9 +775,8 @@ def handle_command(cmd: str) -> None:
         "/drops": show_drops,
         "/enchants": show_enchants,
         "/horse": horse_festival,
-        "/trading": lambda: print_animated("Trading system coming soon!"),
-        "/professions": lambda: print_animated("Professions system coming soon!"),
-        "/events": lambda: print_animated("No active events at the moment."),
+        "/trading": trading_system,
+        "/professions": professions_system,
         "/gambling": gambling_guide,
         "/codes": redeem_codes,
         "/duel": duel_info,
@@ -769,8 +788,15 @@ def handle_command(cmd: str) -> None:
         "/dailymob": daily_monster,
         "/weapon_info": lambda: show_weapon_info(),
         "/settings": user_settings,
-        "/setprogress": lambda: print_animated("Progress system coming soon!"),
-        "/prefix": command_prefix
+        "/prefix": command_prefix,
+        "/pet_adopt": adopt_pet,
+        "/pet_train": train_pet,
+        "/pet_list": show_pets,
+        "/achievement_list": show_achievements,
+        "/inventory_sort": sort_inventory,
+        "/inventory_filter": filter_inventory,
+        "/quest_complete": complete_quest,
+        "/quest_list": list_active_quests
     }
 
     # Handle commands with arguments
@@ -780,6 +806,16 @@ def handle_command(cmd: str) -> None:
         equip_item(cmd.split(" ", 1)[1])
     elif cmd.startswith("/dungeon "):
         enter_dungeon(cmd.split(" ", 1)[1])
+    elif cmd.startswith("/guild_join "):
+        guild_join(cmd.split(" ", 1)[1])
+    elif cmd.startswith("/guild_leave"):
+        guild_leave()
+    elif cmd.startswith("/pet_adopt "):
+        adopt_pet(cmd.split(" ", 1)[1])
+    elif cmd.startswith("/pet_train "):
+        train_pet(cmd.split(" ", 1)[1])
+    elif cmd.startswith("/quest_complete "):
+        complete_quest(cmd.split(" ", 1)[1])
     elif cmd in commands:
         commands[cmd]()
     else:
@@ -834,7 +870,7 @@ def command_prefix() -> None:
     print("Prefix for commands is '/'. Use '/help' for all available commands.")
 
 def exit_game() -> None:
-    print("Exiting game CLI. Goodbye!")
+    print_colored("Exiting game...", BLUE)
     sys.exit()
 
 def show_villages() -> None:
@@ -886,113 +922,12 @@ def fight(monster: Dict) -> None:
     monster_health = monster["health"]
     print(f"You encountered a {monster['name']} (Level {monster['level']})!")
 
-        while user_data["health"] > 0 and monster_health > 0:
-            print(f"\nYour Health: {user_data['health']}/{user_data['max_health']} | {monster['name']} Health: {monster_health}")
-            print("\nActions:")
-            print("[1] Attack")
-            print("[2] Use Skill") 
-            print("[3] Use Health Potion")
-            print("[4] Flee")
-
-            action = input("Choose an action: ")
-
-            if action == "1":
-                # Normal attack with critical chance
-                damage = random.randint(5, 15) + (user_data["equipped"]["weapon"]["effect"] if user_data["equipped"]["weapon"] else 0)
-                if random.random() < CRITICAL_CHANCE:
-                    damage *= 2
-                    print("Critical hit!")
-                monster_health -= damage
-                print(f"You dealt {damage} damage to {monster['name']}!")
-
-            elif action == "2":
-                if user_data["skills"]:
-                    print("\nAvailable skills:")
-                    for i, skill in enumerate(user_data["skills"], 1):
-                        print(f"[{i}] {skill}")
-                    try:
-                        skill_choice = int(input("Choose skill (0 to cancel): "))
-                        if skill_choice == 0:
-                            continue
-                        if 1 <= skill_choice <= len(user_data["skills"]):
-                            skill = user_data["skills"][skill_choice - 1]
-                            damage = random.randint(15, 25)  # Skills do more damage
-                            monster_health -= damage
-                            print(f"You used {skill} and dealt {damage} damage!")
-                        else:
-                            print("Invalid skill choice.")
-                    except ValueError:
-                        print("Invalid input.")
-                else:
-                    print("You have no skills available!")
-                    continue
-
-        elif action == "3":
-            if "Healing Potion" in user_data["inventory"]:
-                user_data["health"] = min(user_data["health"] + 30, user_data["max_health"])
-                user_data["inventory"].remove("Healing Potion")
-                print("You used a Healing Potion! Health restored.")
-                continue
-            else:
-                print("You have no Healing Potions!")
-                continue
-
-        elif action == "4":
-            if random.random() < 0.7:  # 70% chance to flee
-                print("You successfully fled the battle!")
-                return
-            print("Failed to flee!")
-
-        else:
-            print("Invalid action!")
-            continue
-
-        # Monster's turn
-        if monster_health > 0:
-            if random.random() > DODGE_CHANCE:  # Dodge chance
-                monster_damage = max(1, random.randint(5, monster["attack"]) - (user_data["equipped"]["armor"]["effect"] if user_data["equipped"]["armor"] else 0))
-                user_data["health"] -= monster_damage
-                print(f"{monster['name']} attacks! You take {monster_damage} damage.")
-            else:
-                print("You dodged the attack!")
-
-    if monster_health <= 0:
-        print(f"\nYou defeated {monster['name']}!")
-        exp_gain = monster["level"] * 20
-        user_data["exp"] += exp_gain
-        print(f"You gained {exp_gain} experience!")
-
-        # Level up check
-        check_level_up()
-
-        # Quest progress
-        update_quest_progress(monster["name"])
-
-        loot(monster)
-
-def level_up() -> None:
-    user_data["level"] += 1
-    user_data["max_health"] += 20
-    user_data["health"] = user_data["max_health"]
-    user_data["attack"] += 5
-    user_data["defense"] += 3
-    print(f"\nLevel Up! You are now level {user_data['level']}!")
-    print("Your stats have increased!")
-
-def update_quest_progress(monster_name: str) -> None:
-    for quest in user_data["active_quests"]:
-        if quest["target"]["monster"] == monster_name:
-            quest["target"]["count"] -= 1
-            if quest["target"]["count"] <= 0:
-                complete_quest(quest)
-
-def complete_quest(quest: Dict) -> None:
-    print(f"\nQuest Complete: {quest['name']}")
-    user_data["gold"] += quest["reward"]["gold"]
-    user_data["exp"] += quest["reward"]["exp"]
-    user_data["active_quests"].remove(quest)
-    user_data["completed_quests"].append(quest["id"])
-    print(f"Rewards: {quest['reward']['gold']} gold, {quest['reward']['exp']} exp")
+    while user_data["health"] > 0 and monster_health > 0:
+        print(f"\nYour Health: {user_data['health']}/{user_data['max_health']} | {monster['name']} Health: {monster_health}")
+        print("\nActions:")
+        print("[1] Attack")
+        print("[2] Use Skill") 
+        print("[3] Use Health Potion")
 
 def get_save_slots() -> List[str]:
     saves = [f for f in os.listdir() if f.startswith("save_") and f.endswith(".json")]
@@ -1065,14 +1000,17 @@ def auto_save() -> None:
 
 def show_save_slots() -> None:
     print_header("Save Slots")
-    saves = get_save_slots()
+    save_dir = get_save_directory()
+    saves = [f for f in os.listdir(save_dir) if f.startswith("save_") and f.endswith(".json")]
+    saves = sorted(saves)
     if not saves:
         print("No saved games found.")
         return
 
     for save in saves:
         try:
-            with open(save, "r") as f:
+            save_path = os.path.join(save_dir, save)
+            with open(save_path, "r") as f:
                 data = json.load(f)
                 slot = save.split("_")[1].split(".")[0]
                 print(f"\nSlot {slot}:")
@@ -1263,68 +1201,122 @@ def show_support() -> None:
     print("Wiki: https://example.com/wiki")
     print("Discord: https://discord.gg/example")
 
-# Function stubs for other commands
-def farming_guide() -> None:
-    print_header("Farming Guide")
-    print("Farming allows you to gather resources and grow crops for crafting and trading.")
-
-def duel_info() -> None:
-    print_header("Duel Info")
-    print("Duels allow you to challenge other players for rewards and bragging rights.")
-    print("Use '/duel [player_name]' to initiate a duel.")
-
-def redeem_codes() -> None:
-    print_header("Redeemable Codes")
-    print("Enter redeemable codes to claim rewards!")
-    code = input("Enter code: ").strip()
-    if code == "WELCOME2023":
-        print("Code redeemed! You received 50 gold.")
-        user_data["gold"] += 50
-    else:
-        print("Invalid code. Try again.")
-
-def gambling_guide() -> None:
-    print_header("Gambling Guide")
-    print("Gambling allows you to risk your gold for a chance to win big rewards. Play responsibly!")
-
-def daily_monster() -> None:
-    print_header("Daily Monster")
-    monster = random.choice(monsters)
-    print(f"Today's monster is: {monster['name']} (Level {monster['level']})")
-    print(f"Health: {monster['health']}, Attack: {monster['attack']}")
-    print(f"Loot: {', '.join(monster['drops'])}")
-
-def inventory_calculator() -> None:
-    print_header("Inventory Calculator")
-    print("This feature calculates the total value of your inventory.")
-
-def time_travel_guide() -> None:
-    print_header("Time Travel Guide")
-    print("Time travel allows you to revisit past events and gain unique rewards.")
-
-def craft_recipes() -> None:
-    print_header("Crafting Recipes")
-    print("Crafting recipes will be displayed here.")
-
-def dismantle_items() -> None:
-    print_header("Dismantling Items")
-    print("Dismantling items will be displayed here.")
-
-def show_drops() -> None:
-    print_header("Monster Drops")
-    print("Monster drops will be displayed here.")
-
-def show_enchants() -> None:
-    print_header("Enchantments")
-    print("Enchantments will be displayed here.")
-
-def show_inventory() -> None:
-    print_header("Inventory")
-    if not user_data["inventory"]:
-        print("Your inventory is empty.")
+# Guild management commands
+def guild_join(guild_name: str) -> None:
+    if user_data["guild"]:
+        print(f"You are already in the guild '{user_data['guild']}'. Leave it first to join another.")
         return
-    for idx, item in enumerate(user_data["inventory"], 1):
-        print(f"{idx}. {item}")
+    user_data["guild"] = guild_name
+    print(f"You have joined the guild '{guild_name}'.")
+
+def guild_leave() -> None:
+    if not user_data["guild"]:
+        print("You are not currently in any guild.")
+        return
+    print(f"You have left the guild '{user_data['guild']}'.")
+    user_data["guild"] = None
+
+def guild_list() -> None:
+    print_header("Guild List")
+    # For now, just a static list of guilds
+    guilds = ["Warriors", "Mages", "Rogues", "Paladins", "Hunters"]
+    for guild in guilds:
+        print(f"- {guild}")
+
+# Trading system
+def trading_system() -> None:
+    print_header("Trading System")
+    print("Trading system is under development. Stay tuned!")
+
+# Professions system
+def professions_system() -> None:
+    print_header("Professions System")
+    if user_data["has_chosen_profession"]:
+        print(f"You are currently a {user_data['profession']}.")
+    else:
+        print("You have not chosen a profession yet.")
+        print("Available professions:")
+        for prof in PROFESSIONS:
+            print(f"- {prof}")
+        choice = input("Choose a profession: ").capitalize()
+        if choice in PROFESSIONS:
+            user_data["profession"] = choice
+            user_data["has_chosen_profession"] = True
+            print(f"You are now a {choice}.")
+        else:
+            print("Invalid profession choice.")
+
+# Pet management commands
+def adopt_pet(pet_name: str) -> None:
+    if pet_name in PETS:
+        if pet_name in user_data["pets"]:
+            print(f"You already have a pet named {pet_name}.")
+        else:
+            user_data["pets"].append(pet_name)
+            print(f"You have adopted a pet: {pet_name}.")
+    else:
+        print(f"No pet named {pet_name} found.")
+
+def train_pet(pet_name: str) -> None:
+    if pet_name in user_data["pets"]:
+        print(f"Training pet {pet_name}... (Feature coming soon!)")
+    else:
+        print(f"You do not own a pet named {pet_name}.")
+
+def show_pets() -> None:
+    print_header("Your Pets")
+    if not user_data["pets"]:
+        print("You have no pets.")
+        return
+    for pet in user_data["pets"]:
+        print(f"- {pet}")
+
+# Achievements system
+achievements = []
+
+def show_achievements() -> None:
+    print_header("Achievements")
+    if not achievements:
+        print("No achievements earned yet.")
+    else:
+        for ach in achievements:
+            print(f"- {ach}")
+
+# Inventory management commands
+def sort_inventory() -> None:
+    user_data["inventory"].sort()
+    print("Inventory sorted alphabetically.")
+
+def filter_inventory() -> None:
+    filter_term = input("Enter filter term: ").lower()
+    filtered = [item for item in user_data["inventory"] if filter_term in item.lower()]
+    print(f"Filtered inventory items containing '{filter_term}':")
+    for item in filtered:
+        print(f"- {item}")
+
+# Quest management commands
+def list_active_quests() -> None:
+    print_header("Active Quests")
+    if not user_data["active_quests"]:
+        print("You have no active quests.")
+        return
+    for quest in user_data["active_quests"]:
+        print(f"- {quest['name']}: {quest['description']}")
+
+def complete_quest(quest_name: str) -> None:
+    quest = next((q for q in user_data["active_quests"] if q["name"].lower() == quest_name.lower()), None)
+    if quest:
+        user_data["active_quests"].remove(quest)
+        user_data["completed_quests"].append(quest["id"])
+        reward = quest.get("reward", {})
+        gold = reward.get("gold", 0)
+        exp = reward.get("exp", 0)
+        user_data["gold"] += gold
+        user_data["exp"] += exp
+        print(f"Quest '{quest['name']}' completed! You received {gold} gold and {exp} experience.")
+        check_level_up()
+    else:
+        print(f"No active quest named '{quest_name}' found.")
 
 def create_character() -> None:
     if user_data["class"] is not None:
@@ -1517,6 +1509,95 @@ biomes = [
 }
 ]
 
+# Dismantle items function stub
+def dismantle_items() -> None:
+    print_header("Dismantling Items")
+    print("Dismantling items feature is coming soon!")
+
+# Inventory calculator function stub
+def inventory_calculator() -> None:
+    print_header("Inventory Calculator")
+    print("Inventory calculator feature is coming soon!")
+
+# Show drops function stub
+def show_drops() -> None:
+    print_header("Monster Drops")
+    print("Monster drops feature is coming soon!")
+
+# Show enchants function stub
+def show_enchants() -> None:
+    print_header("Enchantments")
+    print("Enchantments feature is coming soon!")
+
+# Time travel guide function
+def time_travel_guide() -> None:
+    print_header("Time Travel Guide")
+    print("Select a location to travel back in time to:")
+
+    locations = list(LOCATIONS.keys())
+    for i, loc in enumerate(locations, 1):
+        print(f"{i}. {loc} - {LOCATIONS[loc]['description']}")
+
+    choice = input("\nEnter the number of the location to time travel to (or 0 to cancel): ")
+    try:
+        choice = int(choice)
+        if choice == 0:
+            print("Time travel cancelled.")
+            return
+        if 1 <= choice <= len(locations):
+            destination = locations[choice - 1]
+            user_data["current_area"] = destination
+            print(f"You have traveled back in time to {destination}!")
+        else:
+            print("Invalid choice.")
+    except ValueError:
+        print("Invalid input.")
+
+# Show inventory function stub
+def show_inventory() -> None:
+    print_header("Inventory")
+    if not user_data["inventory"]:
+        print("Your inventory is empty.")
+        return
+    for idx, item in enumerate(user_data["inventory"], 1):
+        print(f"{idx}. {item}")
+
+# Daily monster function stub
+def daily_monster() -> None:
+    print_header("Daily Monster")
+    monster = random.choice(monsters)
+    print(f"Today's monster is: {monster['name']} (Level {monster['level']})")
+    print(f"Health: {monster['health']}, Attack: {monster['attack']}")
+    print(f"Loot: {', '.join(monster['drops'])}")
+
+# Redeem codes function
+def redeem_codes() -> None:
+    print_header("Redeemable Codes")
+    print("Enter redeemable codes to claim rewards!")
+    code = input("Enter code: ").strip()
+    if code == "WELCOME2023":
+        print("Code accepted! You received 100 gold and 50 experience.")
+        user_data["gold"] += 100
+        user_data["exp"] += 50
+        check_level_up()
+    else:
+        print("Invalid or expired code.")
+
+# Gambling guide function stub
+def gambling_guide() -> None:
+    print_header("Gambling Guide")
+    print("Gambling feature is coming soon! Play responsibly.")
+
+# Duel info function stub
+def duel_info() -> None:
+    print_header("Duel Info")
+    print("Duel feature is coming soon! Challenge your friends.")
+
+# Farming guide function stub
+def farming_guide() -> None:
+    print_header("Farming Guide")
+    print("Farming feature is coming soon! Grow your own crops.")
+
 # Horse festival function (added for completeness)
 def horse_festival() -> None:
     print_header("Horse Festival")
@@ -1661,10 +1742,11 @@ def fight_monster(monster_name: str) -> None:
                 print(f"Monster Health: {monster_health}/{monster['health']}")
                 print("\nActions:")
                 print("1. Attack")
-                print("2. Use Healing Potion")
-                print("3. Flee")
+                print("2. Use Skill")
+                print("3. Use Healing Potion")
+                print("4. Flee")
 
-                choice = input("Choose action (1-3): ").strip()
+                choice = input("Choose action (1-4): ").strip()
 
                 if choice == "1":
                     # Calculate damage with equipped weapon
@@ -1679,34 +1761,47 @@ def fight_monster(monster_name: str) -> None:
                     monster_health -= damage
                     print(f"You deal {damage} damage!")
 
-            elif choice == "2":
-                if user_data["skills"]:
-                    print("\nAvailable skills:")
-                    for i, skill in enumerate(user_data["skills"], 1):
-                        print(f"[{i}] {skill}")
-            try:
-                skill_choice = int(input("Choose skill (0 to cancel): "))
-                if skill_choice == 0:
-                    continue
-                if 1 <= skill_choice <= len(user_data["skills"]):
-                    skill = user_data["skills"][skill_choice - 1]
-                    damage = random.randint(15, 25)  # Skills do more damage
-                    monster_health -= damage
-                    print(f"You used {skill} and dealt {damage} damage!")
+                elif choice == "2":
+                    if user_data["skills"]:
+                        print("\nAvailable skills:")
+                        for i, skill in enumerate(user_data["skills"], 1):
+                            print(f"[{i}] {skill}")
+                        try:
+                            skill_choice = int(input("Choose skill (0 to cancel): "))
+                            if skill_choice == 0:
+                                continue
+                            if 1 <= skill_choice <= len(user_data["skills"]):
+                                skill = user_data["skills"][skill_choice - 1]
+                                damage = random.randint(15, 25)  # Skills do more damage
+                                monster_health -= damage
+                                print(f"You used {skill} and dealt {damage} damage!")
+                            else:
+                                print("Invalid skill choice.")
+                        except ValueError:
+                            print("Invalid input.")
+                    else:
+                        print("You have no skills available!")
+                        continue
+
+                elif choice == "3":
+                    if "Healing Potion" in user_data["inventory"]:
+                        user_data["health"] = min(user_data["health"] + 30, user_data["max_health"])
+                        user_data["inventory"].remove("Healing Potion")
+                        print("You used a Healing Potion! Health restored.")
+                        continue
+                    else:
+                        print("You have no Healing Potions!")
+                        continue
+
+                elif choice == "4":
+                    if random.random() < 0.6:
+                        print("You successfully fled!")
+                        return
+                    print("Failed to flee!")
+
                 else:
-                    print("Invalid skill choice.")
-            except ValueError:
-                print("Invalid input.")
-
-            elif choice == "3":
-                if random.random() < 0.6:
-                    print("You successfully fled!")
-                    return
-                print("Failed to flee!")
-
-            else:
-                print("Invalid choice!")
-                continue
+                    print("Invalid choice!")
+                    continue
 
                 # Monster attacks if still alive
                 if monster_health > 0:
@@ -1719,7 +1814,7 @@ def fight_monster(monster_name: str) -> None:
                         print("You dodged the attack!")
 
             except Exception as e:
-                  print(f"Error during combat: {e}")
+                print(f"Error during combat: {e}")
                 continue
 
         if monster_health <= 0:
@@ -1903,8 +1998,9 @@ def delete_save_prompt() -> None:
 
 # Main loop
 if __name__ == "__main__":
-    print("Welcome to TextRP CLI!")
-    print("Type '/help' for commands or '/new' to create a character.")
+    print_colored(f"{BOLD}{CYAN}Welcome to TextRP CLI!{ENDC}", CYAN)
+    print_colored(f"{BOLD}{BLUE}Made by andy64lol{ENDC}", BLUE)
+    print_colored(f"{BOLD}{GREEN}Type '/help' for commands or '/new' to create a character.{ENDC}", GREEN)
 
     # Auto-save interval in seconds
     AUTO_SAVE_INTERVAL = 300  # 5 minutes
@@ -1917,14 +2013,14 @@ if __name__ == "__main__":
                 auto_save()
                 last_save = time.time()
 
-            command = input("\n>> ").strip()
+            command = input(f"\n{YELLOW}>> {ENDC}").strip()
             # Do not convert to lowercase to preserve command arguments
             handle_command(command.lower())
 
             # Auto-save after important actions (check command prefix only)
-            if command.lower().startswith(("/fight", "/dungeon", "/equip", "/travel")):
+            if command.lower().startswith(("/fight", "/dungeon", "/equip", "/travel","/help")):
                 auto_save()
                 last_save = time.time()
         except Exception as e:
-            print(f"Error: {e}")
-            print("Type '/help' for available commands.")
+            print(f"{FAIL}Error: {e}{ENDC}")
+            print_colored("Type '/help' for available commands.", YELLOW)
